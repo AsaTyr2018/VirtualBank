@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.00.027] Middleware Helmet Compatibility
+- **Change Type:** Emergency Change
+- **Reason:** The middleware container crashed during startup because `@fastify/helmet` v13 requires Fastify v5, while the stack still ships Fastify v4, causing Docker deployments to fail immediately.
+- **What Changed:** Downgraded `@fastify/helmet` to the v12 line that remains compatible with Fastify v4 and refreshed the lockfile to keep the middleware container bootable.
+
 ## [0.00.026] Compose Port Isolation
 - **Change Type:** Standard Change
 - **Reason:** Running multiple stacks concurrently caused Docker to compete for port `5173`, blocking the middleware stack when the standalone frontend was already bound to the host.
