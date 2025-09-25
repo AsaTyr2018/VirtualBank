@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VirtualBank Command Center | Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <style>
+      body {
+        background: #f7f9fc;
+      }
+      .command-center {
+        display: grid;
+        gap: 2rem;
+        margin: 3rem auto;
+        max-width: 1280px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+      }
+      .module-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      .module-header h2 {
+        margin: 0;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .pill.success {
+        background: #e6f6ec;
+        color: #16794b;
+      }
+      .pill.warning {
+        background: #fff4e5;
+        color: #b95000;
+      }
+      .pill.info {
+        background: #e6f0ff;
+        color: #234aa6;
+      }
+      .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e4e9f2;
+      }
+      .status-row:last-child {
+        border-bottom: none;
+      }
+      .status-row span {
+        font-weight: 600;
+      }
+      .status-row small {
+        color: #64748b;
+      }
+      .list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .list li + li {
+        margin-top: 0.75rem;
+      }
+      .list strong {
+        display: block;
+      }
+      .tag-strip {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .tag-strip span {
+        padding: 0.35rem 0.7rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        background: rgba(35, 74, 166, 0.1);
+        color: #234aa6;
+        font-weight: 600;
+      }
+      .timeline {
+        position: relative;
+        padding-left: 1.5rem;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0.45rem;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        width: 2px;
+        background: linear-gradient(180deg, rgba(35, 74, 166, 0.4), rgba(35, 74, 166, 0));
+      }
+      .timeline-item {
+        position: relative;
+        padding: 0.5rem 0 0.5rem 0.5rem;
+      }
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -1.05rem;
+        top: 0.9rem;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #234aa6;
+      }
+      .timeline-item strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .table th,
+      .table td {
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 1px solid #e4e9f2;
+      }
+      .table th {
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      @media (max-width: 768px) {
+        nav {
+          flex-direction: column;
+          gap: 1.5rem;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        VirtualBank <span>Command Center</span>
+      </div>
+      <div class="actions">
+        <a class="btn-ghost" href="../uxAdmin.html">Return to staff login</a>
+        <a class="btn-secondary" href="../index.html">Customer experience</a>
+      </div>
+    </nav>
+
+    <main>
+      <section class="shell card card-muted" style="margin-top: 2rem;">
+        <span class="tag">Preview concept</span>
+        <h1>Operational command center for VirtualBank game masters</h1>
+        <p>
+          This prototype illustrates how administrators monitor platform health, resolve escalations, and coordinate live events.
+          Each module is designed for swift triage, clear accountability, and a delightful workday rhythm.
+        </p>
+        <div class="tag-strip" style="margin-top: 1.5rem;">
+          <span>Realtime oversight</span>
+          <span>Queue automation</span>
+          <span>Event orchestration</span>
+          <span>Audit-ready</span>
+        </div>
+      </section>
+
+      <section class="command-center">
+        <div class="grid-3">
+          <article class="card">
+            <div class="module-header">
+              <h2>Platform status</h2>
+              <span class="pill success">Operational</span>
+            </div>
+            <div class="status-row">
+              <div>
+                <span>Login API</span>
+                <small>Avg latency 142ms</small>
+              </div>
+              <small>99.98% uptime</small>
+            </div>
+            <div class="status-row">
+              <div>
+                <span>Payments gateway</span>
+                <small>Ledger sync nominal</small>
+              </div>
+              <small>99.94% uptime</small>
+            </div>
+            <div class="status-row">
+              <div>
+                <span>Market desk</span>
+                <small>Next volatility sweep in 12m</small>
+              </div>
+              <small>99.88% uptime</small>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="module-header">
+              <h2>Active shifts</h2>
+              <span class="pill info">Crew of 4</span>
+            </div>
+            <ul class="list">
+              <li>
+                <strong>Celeste Ray • Command</strong>
+                Coordinating feature flags, reviewing major incidents, and approving escalations.
+              </li>
+              <li>
+                <strong>Leo Amari • Economy</strong>
+                Monitoring credit yields, treasury liquidity, and market drift alerts.
+              </li>
+              <li>
+                <strong>Mira Chen • Support</strong>
+                Handling escalated tickets, coaching mentors, and scanning sentiment feeds.
+              </li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="module-header">
+              <h2>Runbook shortcuts</h2>
+              <span class="pill warning">Critical ready</span>
+            </div>
+            <ul class="list">
+              <li>
+                <strong>Major incident bridge</strong>
+                Spin up comms hub, pin leadership contacts, and load restoration checklist in one click.
+              </li>
+              <li>
+                <strong>Economy rebalance</strong>
+                Draft patch notes, queue automated grants, and schedule broadcast to all players.
+              </li>
+              <li>
+                <strong>Security drill</strong>
+                Trigger red-team scenario with sandboxed alerts to validate staff response time.
+              </li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <div class="module-header">
+              <h2>Escalation queue</h2>
+              <span class="pill warning">6 awaiting</span>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Topic</th>
+                  <th>Owner</th>
+                  <th>SLA</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="pill warning">P1</span></td>
+                  <td>Transfer delays in EU cluster</td>
+                  <td>Celeste Ray</td>
+                  <td>12m remaining</td>
+                </tr>
+                <tr>
+                  <td><span class="pill info">P2</span></td>
+                  <td>Mentor onboarding stuck at step 3</td>
+                  <td>Mira Chen</td>
+                  <td>29m remaining</td>
+                </tr>
+                <tr>
+                  <td><span class="pill info">P2</span></td>
+                  <td>Promo vault miscredit</td>
+                  <td>Leo Amari</td>
+                  <td>51m remaining</td>
+                </tr>
+                <tr>
+                  <td><span class="pill info">P3</span></td>
+                  <td>UX copy review request</td>
+                  <td>Nova Ellis</td>
+                  <td>2h 15m</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="card">
+            <div class="module-header">
+              <h2>Live comms</h2>
+              <span class="pill info">Broadcast</span>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <strong>14:05 • Outage drill wrap-up</strong>
+                Command staff signed off runbook steps; publishing recap to knowledge base.
+              </div>
+              <div class="timeline-item">
+                <strong>13:42 • Mentor huddle</strong>
+                Support lead flagged 4 rising sentiment spikes; action items assigned.
+              </div>
+              <div class="timeline-item">
+                <strong>13:08 • Market bulletin</strong>
+                Economy desk announced volatility cap for Sector R for next 6 hours.
+              </div>
+              <div class="timeline-item">
+                <strong>12:50 • Feature flag</strong>
+                Command toggled "Quest Vault" beta live for cohort GAMMA-42.
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <div class="module-header">
+              <h2>Health signals</h2>
+              <span class="pill success">Stable trend</span>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Current</th>
+                  <th>Change</th>
+                  <th>Target</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Active players</td>
+                  <td>42,178</td>
+                  <td><span class="pill success">▲ 4.2%</span></td>
+                  <td>40,000</td>
+                </tr>
+                <tr>
+                  <td>Support backlog</td>
+                  <td>38 tickets</td>
+                  <td><span class="pill success">▼ 12%</span></td>
+                  <td>&lt;45</td>
+                </tr>
+                <tr>
+                  <td>Fraud flags</td>
+                  <td>3 cases</td>
+                  <td><span class="pill warning">▲ 1</span></td>
+                  <td>&lt;2</td>
+                </tr>
+                <tr>
+                  <td>Capital reserves</td>
+                  <td>231.5M credits</td>
+                  <td><span class="pill success">▲ 2.1%</span></td>
+                  <td>200M</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="card">
+            <div class="module-header">
+              <h2>Upcoming rituals</h2>
+              <span class="pill info">Next 24h</span>
+            </div>
+            <ul class="list">
+              <li>
+                <strong>17:00 • Seasonal quest kickoff</strong>
+                Launch hero narrative and distribute golden ticket invites to top 5% explorers.
+              </li>
+              <li>
+                <strong>19:30 • Treasury rebalance</strong>
+                Sync vault reserves with market desk, update liquidity ratios, and publish digest.
+              </li>
+              <li>
+                <strong>08:00 • Mentor coaching</strong>
+                Host skill sprint on empathetic outreach with real-time chat shadowing.
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
