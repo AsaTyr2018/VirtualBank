@@ -11,7 +11,8 @@ const EnvSchema = Type.Object({
   RATE_LIMIT_MAX: Type.Optional(Type.String({ default: '100' })),
   RATE_LIMIT_TIME_WINDOW: Type.Optional(Type.String({ default: '1 minute' })),
   IDEMPOTENCY_TTL_SECONDS: Type.Optional(Type.String({ default: '600' })),
-  PUBLIC_BASE_URL: Type.Optional(Type.String())
+  PUBLIC_BASE_URL: Type.Optional(Type.String()),
+  SESSION_STREAM_HEARTBEAT_SECONDS: Type.Optional(Type.String({ default: '30' }))
 });
 
 export type EnvConfig = Static<typeof EnvSchema>;
@@ -32,6 +33,7 @@ export function parseEnv(env: NodeJS.ProcessEnv): EnvConfig {
     RATE_LIMIT_MAX: result.RATE_LIMIT_MAX ?? '100',
     RATE_LIMIT_TIME_WINDOW: result.RATE_LIMIT_TIME_WINDOW ?? '1 minute',
     IDEMPOTENCY_TTL_SECONDS: result.IDEMPOTENCY_TTL_SECONDS ?? '600',
-    PUBLIC_BASE_URL: result.PUBLIC_BASE_URL
+    PUBLIC_BASE_URL: result.PUBLIC_BASE_URL,
+    SESSION_STREAM_HEARTBEAT_SECONDS: result.SESSION_STREAM_HEARTBEAT_SECONDS ?? '30'
   };
 }

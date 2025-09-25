@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.00.016] Middleware API Surface Expansion
+- **Change Type:** Normal Change
+- **Reason:** Bring the executable middleware in line with the architecture blueprint by exposing credit, market, and session stream touchpoints for downstream teams.
+- **What Changed:** Added credit application and market order endpoints with schema validation, introduced the real-time session WebSocket stream with heartbeat configuration, expanded shared utilities/logging, refreshed the README middleware summary, and updated dependencies to support the new transports.
+
 ## [0.00.015] Middleware Core Service Bootstrap
 - **Change Type:** Normal Change
 - **Reason:** Begin implementing the middleware gateway so the documented transaction flow has an executable foundation for future ledger and stock market integrations.

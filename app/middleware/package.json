@@ -15,6 +15,7 @@
     "@fastify/rate-limit": "^10.3.0",
     "@fastify/sensible": "^6.0.3",
     "@fastify/type-provider-typebox": "^5.0.0",
+    "@fastify/websocket": "^11.2.0",
     "@sinclair/typebox": "^0.32.30",
     "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
+    "@types/ws": "^8.18.1",
     "pino-pretty": "^11.0.0",
     "tsx": "^4.7.1",
     "typescript": "^5.4.5"

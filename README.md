@@ -28,8 +28,13 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 - [`Changelog/Changelog.md`](Changelog/Changelog.md) – Running log of product and documentation updates.
 
 ## Middleware Core Service
-- **Endpoints:** Health probe at `/health/live`, transfer intake at `/api/v1/transfers`, and status retrieval at `/api/v1/transfers/:id` with schema validation.
-- **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging, and configurable environment via `MIDDLEWARE_*` variables.
+- **Endpoints:**
+  - Health probe at `/health/live`.
+  - Transfer intake at `/api/v1/transfers` with status retrieval at `/api/v1/transfers/:id`.
+  - Credit line intake at `/api/v1/credits/applications` for Game Master scoring workflows.
+  - Market order intake at `/api/v1/market/orders` with limit-order validation.
+- **Streaming:** WebSocket stream at `/api/v1/sessions/stream` that emits ready, heartbeat, and demo portfolio updates so the frontend can wire real-time dashboards.
+- **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging hooks for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
 - **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.
 
 ## Datasets
