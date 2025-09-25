@@ -1,4 +1,8 @@
 # Changelog
+## [0.00.018] Data Store Stack Folder Alignment
+- **Change Type:** Standard Change
+- **Reason:** Align infrastructure assets with the expected `apps` hierarchy so the compose stack is discoverable alongside other components.
+- **What Changed:** Moved `datastore-compose.yml` to `apps/datastore/datastore-compose.yml`, refreshed README instructions and structure references to point at the new location, and documented the adjustment here.
 
 ## [0.00.017] Data Store Stack Bootstrap
 - **Change Type:** Normal Change
