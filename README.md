@@ -8,7 +8,7 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 3. Bootstrap the new frontend shell with `cd app/frontend && npm install` followed by `npm run dev` (served from `http://localhost:5173`).
 4. Prefer Docker Compose for isolated stacks:
    - Middleware only: `docker compose -f middleware-compose.yml up --build` (publishes `http://localhost:8080`).
-   - Frontend only: `docker compose -f frontend-compose.yml up --build` (serves `http://localhost:5173`).
+   - Frontend only: `docker compose -f frontend-compose.yml up --build` (serves `http://localhost:5173` by default; override the host port with `FRONTEND_WEB_PORT=5317 docker compose -f frontend-compose.yml up --build` when another service already occupies `5173`).
 5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
@@ -48,11 +48,14 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready and 
 - `docs/` – Centralized documentation hub with licenses, datasets, and design workspaces.
   - [`docs/design/Middleware/middleware-core-service.md`](docs/design/Middleware/middleware-core-service.md) – Middleware architecture covering APIs, sagas, observability, and operations.
   - [`docs/design/Frontend/`](docs/design/Frontend/) – Conceptual HTML previews for login, dashboard, and administrator experiences.
-  - [`docs/design/Stockmarket/stockmarket-simulation.md`](docs/design/Stockmarket/stockmarket-simulation.md) – Real-time market simulation blueprint spanning data generation, matching, risk, and analytics.
-  - [`docs/design/Data Stores/data-store-architecture.md`](docs/design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
+ - [`docs/design/Stockmarket/stockmarket-simulation.md`](docs/design/Stockmarket/stockmarket-simulation.md) – Real-time market simulation blueprint spanning data generation, matching, risk, and analytics.
+ - [`docs/design/Data Stores/data-store-architecture.md`](docs/design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
 - [`docs/dataset/`](docs/dataset/) – Curated fake companies and portfolio seeds for market-simulation testing.
 - [`middleware-compose.yml`](middleware-compose.yml) – Dedicated Docker Compose stack for the middleware core service.
 - [`Changelog/Changelog.md`](Changelog/Changelog.md) – Running log of product and documentation updates.
+
+### Troubleshooting
+- **Frontend port already in use:** Vite preview binds the host port defined by `FRONTEND_WEB_PORT` (default `5173`). Stop the conflicting service or relaunch the stack with a new host port, for example `FRONTEND_WEB_PORT=5317 docker compose -f frontend-compose.yml up --build`.
 
 ## Data Store Stack
 The `apps/datastore/datastore-compose.yml` stack mirrors the architecture defined in the data store blueprint. It provisions:
