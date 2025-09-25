@@ -5,7 +5,7 @@ services:
     image: bitnami/postgresql:16.3.0
     container_name: vb-postgres-primary
     ports:
-      - "5432:5432"
+      - "15432:5432"
     environment:
       - POSTGRESQL_USERNAME=vb_app
       - POSTGRESQL_PASSWORD=vb_app_password
@@ -33,7 +33,7 @@ services:
       postgres-primary:
         condition: service_healthy
     ports:
-      - "5433:5432"
+      - "15433:5432"
     environment:
       - POSTGRESQL_USERNAME=vb_app
       - POSTGRESQL_PASSWORD=vb_app_password
@@ -108,7 +108,7 @@ services:
     container_name: vb-clickhouse
     ports:
       - "8123:8123"
-      - "9000:9000"
+      - "19000:9000"
     volumes:
       - clickhouse-data:/var/lib/clickhouse
       - clickhouse-logs:/var/log/clickhouse-server

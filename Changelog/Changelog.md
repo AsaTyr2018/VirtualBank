@@ -1,4 +1,8 @@
 # Changelog
+## [0.00.022] Datastore Port Collision Fix
+- **Change Type:** Emergency Change
+- **Reason:** Docker reported binding failures because PostgreSQL and ClickHouse ports overlapped with existing host services and other stack assignments, preventing the datastore stack from starting.
+- **What Changed:** Remapped the PostgreSQL primary/replica to host ports `15432/15433`, shifted the ClickHouse native listener to host port `19000`, and refreshed the README with updated port guidance and a service table so developers can connect without clashes.
 ## [0.00.021] Middleware Datastore Wiring
 - **Change Type:** Normal Change
 - **Reason:** Ensure the middleware can talk to PostgreSQL out of the box and ship environments with the fake market dataset preloaded.
