@@ -1,5 +1,10 @@
 # Changelog
 
+## [2025-10-07] Market Dataset Enrichment
+- **Change Type:** Normal Change
+- **Reason:** Pre-seed planning requires a richer fake market so investors can experience diverse scenarios.
+- **What Changed:** Expanded `dataset/fake_companies.json` to 100 curated fictional firms, refreshed the README dataset summary, and documented the update here.
+
 -# [2025-10-06] uxAdmin Command Center Preview
 - **Change Type:** Normal Change
 - **Reason:** Provide a tangible HTML preview so stakeholders can experience the proposed administrator control center flow.

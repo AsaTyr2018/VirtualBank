@@ -34,7 +34,7 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 ## Datasets
 The `dataset` folder contains ready-to-use JSON files for stock-market prototyping:
 
-- `fake_companies.json` lists sector-diverse fictional firms with baseline pricing and volatility hints.
+- `fake_companies.json` lists roughly one hundred sector-diverse fictional firms with baseline pricing and volatility hints.
 - `sample_portfolios.json` provides example allocations that feature different strategies and risk profiles.
 
 These assets let designers and engineers populate market simulations instantly without crafting data from scratch.
