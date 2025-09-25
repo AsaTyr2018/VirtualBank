@@ -5,6 +5,7 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
 - **Modular architecture** spanning a rich frontend, a secure middleware gateway, and resilient backend microservices.
+- **Multi-user economy** where every player controls a personal account, Game Masters steward the world, and the system supports credits, yields, and diverse income streams.
 - **Fictional currency** that mimics real banking flows without touching actual money.
 
 ## Project Structure
@@ -13,7 +14,7 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 
 ## Getting Started
 1. Clone the repository.
-2. Explore the design blueprint in [`designing/design.md`](designing/design.md) to understand the planned experience and architecture.
+2. Explore the design blueprint in [`designing/design.md`](designing/design.md) to understand the planned experience, architecture, and virtual economy mechanics.
 3. Follow upcoming implementation guides (to be added) to bring the VirtualBank vision to life.
 
 ## Contributing
