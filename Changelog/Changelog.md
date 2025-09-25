@@ -1,5 +1,15 @@
 # Changelog
 
+-# [2025-10-06] uxAdmin Command Center Preview
+- **Change Type:** Normal Change
+- **Reason:** Provide a tangible HTML preview so stakeholders can experience the proposed administrator control center flow.
+- **What Changed:** Added an interactive `index.html` prototype under `design/Frontend/uxAdmin-control-center/`, refreshed the README to highlight the new preview, and logged the update here.
+
+# [2025-10-05] uxAdmin Command Center Concept
+- **Change Type:** Normal Change
+- **Reason:** Equip administrators with a clear vision for the command center so they can govern the virtual economy confidently.
+- **What Changed:** Added the `design/Frontend/uxAdmin-control-center/` workspace with a design document, feature catalog, and journey map; refreshed the main README and highlighted the new resources.
+
 # [2025-10-04] Frontend Experience Prototypes
 - **Change Type:** Normal Change
 - **Reason:** Craft a warm, professional customer journey that reflects the desired UX-first VirtualBank experience for players and staff.
