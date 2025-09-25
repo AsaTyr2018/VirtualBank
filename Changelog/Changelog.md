@@ -29,3 +29,8 @@
 - **Change Type:** Normal Change
 - **Reason:** Define the core middleware server so implementation can begin with clear technology, API, and operations guidance.
 - **What Changed:** Authored `design/Middleware/middleware-core-service.md` describing the Fastify-based transaction gateway, SSH console, and deployment model; refreshed the README to link the new document and keep documentation discoverable.
+
+## [2025-10-01] Stockmarket Simulation Design
+- **Change Type:** Normal Change
+- **Reason:** Establish a dedicated blueprint for the stockmarket component so real-time trading features can be implemented with confidence.
+- **What Changed:** Replaced the placeholder in `design/Stockmarket/` with a comprehensive simulation design covering architecture, data generation, risk controls, and integration touchpoints, and updated the README to surface the new documentation.
