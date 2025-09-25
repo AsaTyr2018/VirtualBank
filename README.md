@@ -7,7 +7,7 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
 3. Bootstrap the new frontend shell with `cd app/frontend && npm install` followed by `npm run dev` (served from `http://localhost:5173`).
 4. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
-5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
+5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Automated Maintenance
@@ -60,6 +60,17 @@ The `apps/datastore/datastore-compose.yml` stack mirrors the architecture define
 - **ClickHouse warehouse** for analytical workloads and compliance-grade reporting drills.
 - **MinIO object storage** acting as the archive bucket for snapshots, exports, and recovery artifacts.
 
+| Service | Host Port(s) | Notes |
+| --- | --- | --- |
+| PostgreSQL primary | `15432` | Maps to container port `5432`; avoids clashing with local Postgres installs. |
+| PostgreSQL replica | `15433` | Exposes the replica for read-only validation. |
+| Redis cache | `6379` | Standard Redis port for quick testing. |
+| Kafka broker | `9092` | PLAINTEXT listener for local event streaming. |
+| ClickHouse HTTP | `8123` | Default HTTP endpoint for queries and health checks. |
+| ClickHouse native | `19000` | Non-default host binding for the native protocol to prevent overlap with MinIO. |
+| MinIO API | `9000` | S3-compatible API surface. |
+| MinIO console | `9001` | Web console for inspecting buckets and objects. |
+
 Bring the stack online with `docker compose -f apps/datastore/datastore-compose.yml up --build` and connect services using the shared `datastore-net` bridge network. Default credentials are scoped to local development and should be replaced in production-like scenarios.
 
 ## Middleware Core Service
@@ -70,7 +81,7 @@ Bring the stack online with `docker compose -f apps/datastore/datastore-compose.
   - Market order intake at `/api/v1/market/orders` with limit-order validation.
 - **Streaming:** WebSocket stream at `/api/v1/sessions/stream` that emits ready, heartbeat, and demo portfolio updates so the frontend can wire real-time dashboards.
 - **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging hooks for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
-- **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. Defaults target the Compose stack (`vb_app`/`vb_app_password` on `localhost:5432`), or provide a `DATASTORE_URL` connection string when running against managed instances.
+- **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. Defaults target the Compose network service (`vb_app`/`vb_app_password` on `postgres-primary:5432`). When running the middleware outside Docker, point it at `localhost:15432` (or override the compose ports) to reach the primary database, or provide a `DATASTORE_URL` connection string when using managed instances.
 - **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.
 
 ## Datasets
