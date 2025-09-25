@@ -1,4 +1,8 @@
 # Changelog
+## [0.00.020] Automated Maintenance Toolkit
+- **Change Type:** Normal Change
+- **Reason:** Provide administrators with a reliable way to install, update, and remove VirtualBank environments with minimal manual effort.
+- **What Changed:** Added the `scripts/maintenance.sh` automation script that manages cloning, dependency checks, Docker Compose stacks, updates, and full removal; refreshed the README with usage guidance for the new tooling; and documented the enhancement here.
 ## [0.00.019] Frontend Experience Shell
 - **Change Type:** Normal Change
 - **Reason:** Deliver an executable foundation for the heart of the VirtualBank experience so teams can iterate on the documented UX flows.
