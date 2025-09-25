@@ -1,51 +1,43 @@
 # VirtualBank
 
-VirtualBank is a playful online banking simulator that lets users explore modern money-management journeys with a fictional fun-currency. The platform focuses on safe experimentation—no real funds or external bank connectors are involved.
+VirtualBank is a playful online banking simulator for exploring modern money-management journeys with a fictional fun-currency. The focus is on safe experimentation—no real funds or external bank connectors are involved.
+
+## Quickstart
+1. Clone the repository and install dependencies for the middleware prototype: `cd app/middleware && npm install`.
+2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
+3. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
+4. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
-- **Warm customer journeys** featuring premium login, registration, and dashboard concepts tailored for players and staff alike.
-- **Modular architecture** spanning a rich frontend, a secure middleware gateway with embedded ledger services, and resilient market simulation components.
-- **Multi-user economy** where every player controls a personal account, Game Masters steward the world, and the system supports credits, yields, and diverse income streams.
-- **Dynamic stock market sandbox** featuring AI-driven price regimes, sector indices, and fair-play trading mechanics for users to buy and sell virtual equities.
+- **Secure middleware gateway** powered by Fastify, JSON Schema validation, and idempotent transaction intake.
+- **Modular architecture** spanning the frontend, middleware orchestration, stock market simulation, and resilient data stores.
+- **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
+- **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
 
 ## Project Structure
+- `app/` – Runtime services under active development.
+  - [`app/middleware/`](app/middleware/) – Fastify-based middleware core service with TypeScript source, Docker image, and Compose stack.
 - `docs/` – Centralized documentation hub with licenses, datasets, and design workspaces.
-  - [`docs/LICENSE`](docs/LICENSE) – Project license for VirtualBank assets.
-  - [`docs/designing/design.md`](docs/designing/design.md) – End-to-end blueprint covering frontend, middleware, and backend design decisions.
-  - [`docs/design/`](docs/design/) – Thematic workspaces (`Frontend`, `Middleware`, `Data Stores`, `Stockmarket`) ready for focused design notes.
-    - [`docs/design/Frontend/index.html`](docs/design/Frontend/index.html) – Customer welcome screen with sign-in and registration prototypes.
-    - [`docs/design/Frontend/dashboard.html`](docs/design/Frontend/dashboard.html) – Post-login banking overview showcasing account, transfer, and portfolio insights.
-    - [`docs/design/Frontend/uxAdmin.html`](docs/design/Frontend/uxAdmin.html) – Staff-only access point with dedicated authentication controls.
-    - [`docs/design/Frontend/uxAdmin-control-center/index.html`](docs/design/Frontend/uxAdmin-control-center/index.html) – Admin command center preview highlighting live oversight, queue triage, and collaboration modules.
-    - [`docs/design/Frontend/uxAdmin-control-center/`](docs/design/Frontend/uxAdmin-control-center/) – Concept workspace for the admin command center, including design rationale, feature catalog, and journey maps.
-    - [`docs/design/Middleware/middleware-core-service.md`](docs/design/Middleware/middleware-core-service.md) – Middleware server architecture covering APIs, sagas, SSH operations, and deployment practices.
-    - [`docs/design/Stockmarket/stockmarket-simulation.md`](docs/design/Stockmarket/stockmarket-simulation.md) – Real-time market simulation blueprint spanning data generation, matching, risk, and analytics services.
-    - [`docs/design/Data Stores/data-store-architecture.md`](docs/design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
-- Market simulation architecture, gameplay surfaces, and risk controls are detailed in Section 5.4 of the design blueprint.
+  - [`docs/design/Middleware/middleware-core-service.md`](docs/design/Middleware/middleware-core-service.md) – Middleware architecture covering APIs, sagas, observability, and operations.
+  - [`docs/design/Frontend/`](docs/design/Frontend/) – Conceptual HTML previews for login, dashboard, and administrator experiences.
+  - [`docs/design/Stockmarket/stockmarket-simulation.md`](docs/design/Stockmarket/stockmarket-simulation.md) – Real-time market simulation blueprint spanning data generation, matching, risk, and analytics.
+  - [`docs/design/Data Stores/data-store-architecture.md`](docs/design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
 - [`docs/dataset/`](docs/dataset/) – Curated fake companies and portfolio seeds for market-simulation testing.
-- `Changelog/Changelog.md` – Running log of product and documentation updates.
+- [`middleware-compose.yml`](middleware-compose.yml) – Dedicated Docker Compose stack for the middleware core service.
+- [`Changelog/Changelog.md`](Changelog/Changelog.md) – Running log of product and documentation updates.
 
-## Experience Previews
-- Open `docs/design/Frontend/index.html` in a browser to explore the player-focused onboarding flow with toggled sign-in and registration states.
-- Visit `docs/design/Frontend/dashboard.html` for a warm, data-rich customer dashboard concept featuring transfers, customer center access, and portfolio highlights.
-- Use `docs/design/Frontend/uxAdmin.html` to review the dedicated administrator entry point at `/uxAdmin` with role-aware access controls.
-- Open `docs/design/Frontend/uxAdmin-control-center/index.html` to preview the command center layout with live status, escalations, and playbook actions.
-- Explore `docs/design/Frontend/uxAdmin-control-center/` for the command center concept, including detailed module definitions and administrator journeys.
+## Middleware Core Service
+- **Endpoints:** Health probe at `/health/live`, transfer intake at `/api/v1/transfers`, and status retrieval at `/api/v1/transfers/:id` with schema validation.
+- **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging, and configurable environment via `MIDDLEWARE_*` variables.
+- **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.
 
 ## Datasets
 The `docs/dataset` folder contains ready-to-use JSON files for stock-market prototyping:
-
 - `fake_companies.json` lists roughly one hundred sector-diverse fictional firms with baseline pricing and volatility hints.
 - `sample_portfolios.json` provides example allocations that feature different strategies and risk profiles.
 
 These assets let designers and engineers populate market simulations instantly without crafting data from scratch.
-
-## Getting Started
-1. Clone the repository.
-2. Explore the design blueprint in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned experience, architecture, and virtual economy mechanics.
-3. Preview the frontend experience files in `docs/design/Frontend/` to align UI implementation with the desired UX mood.
-4. Follow upcoming implementation guides (to be added) to bring the VirtualBank vision to life.
 
 ## Contributing
 We welcome thoughtful contributions that keep the experience modern, accessible, and fun. Please update the changelog and documentation with every meaningful change.
