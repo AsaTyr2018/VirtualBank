@@ -1,0 +1,29 @@
+.app-shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  padding: 2.5rem;
+}
+
+.app-shell__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+main {
+  flex: 1;
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 1200px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+}
