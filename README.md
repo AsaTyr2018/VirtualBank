@@ -12,6 +12,7 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 ## Project Structure
 - `designing/design.md` – End-to-end blueprint covering frontend, middleware, and backend design decisions.
 - `design/` – Thematic workspaces (`Frontend`, `Middleware`, `Core Banking`, `Data Stores`, `Stockmarket`) ready for focused design notes.
+  - [`design/Middleware/middleware-core-service.md`](design/Middleware/middleware-core-service.md) – Middleware server architecture covering APIs, sagas, SSH operations, and deployment practices.
 - Market simulation architecture, gameplay surfaces, and risk controls are detailed in Section 5.4 of the design blueprint.
 - `dataset/` – Curated fake companies and portfolio seeds for market-simulation testing.
 - `Changelog/Changelog.md` – Running log of product and documentation updates.
