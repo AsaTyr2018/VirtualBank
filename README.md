@@ -12,7 +12,16 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 ## Project Structure
 - `designing/design.md` – End-to-end blueprint covering frontend, middleware, and backend design decisions.
 - Market simulation architecture, gameplay surfaces, and risk controls are detailed in Section 5.4 of the design blueprint.
+- `dataset/` – Curated fake companies and portfolio seeds for market-simulation testing.
 - `Changelog/Changelog.md` – Running log of product and documentation updates.
+
+## Datasets
+The `dataset` folder contains ready-to-use JSON files for stock-market prototyping:
+
+- `fake_companies.json` lists sector-diverse fictional firms with baseline pricing and volatility hints.
+- `sample_portfolios.json` provides example allocations that feature different strategies and risk profiles.
+
+These assets let designers and engineers populate market simulations instantly without crafting data from scratch.
 
 ## Getting Started
 1. Clone the repository.

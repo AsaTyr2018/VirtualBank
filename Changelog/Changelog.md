@@ -14,3 +14,8 @@
 - **Change Type:** Normal Change
 - **Reason:** Introduce a modular stock market sandbox that lets players trade fictional equities with organic price movements and fair safeguards.
 - **What Changed:** Augmented `designing/design.md` with a market simulation bounded context, covering market-data generation, matching, portfolios, risk, and analytics; expanded frontend flows for the Market Desk experience; refreshed the README highlights and structure references to spotlight the new service.
+
+## [2025-09-28] Market Dataset Seed
+- **Change Type:** Normal Change
+- **Reason:** Provide ready-made fake companies and starter portfolios to accelerate stock market prototyping.
+- **What Changed:** Added the `dataset/` directory with curated company and portfolio JSON files, refreshed the README to surface the dataset resources, and documented the update here.
