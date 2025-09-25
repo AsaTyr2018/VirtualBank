@@ -1,0 +1,51 @@
+[
+  {
+    "portfolio_id": "PF-ALPHA",
+    "name": "Alpha Growth",
+    "strategy": "High-conviction growth in emerging tech and media leaders.",
+    "risk_profile": "Aggressive",
+    "cash_reserve": 25000,
+    "holdings": [
+      { "ticker": "CRN", "shares": 120 },
+      { "ticker": "FLR", "shares": 180 },
+      { "ticker": "HYS", "shares": 90 }
+    ]
+  },
+  {
+    "portfolio_id": "PF-BAL",
+    "name": "Balanced Horizons",
+    "strategy": "Blend of defensive staples and innovative infrastructure plays.",
+    "risk_profile": "Moderate",
+    "cash_reserve": 40000,
+    "holdings": [
+      { "ticker": "ELM", "shares": 260 },
+      { "ticker": "LUM", "shares": 85 },
+      { "ticker": "AVX", "shares": 150 },
+      { "ticker": "GHC", "shares": 210 }
+    ]
+  },
+  {
+    "portfolio_id": "PF-IMPACT",
+    "name": "Impact Pulse",
+    "strategy": "Sustainability-forward companies delivering measurable eco returns.",
+    "risk_profile": "Moderate",
+    "cash_reserve": 30000,
+    "holdings": [
+      { "ticker": "BQE", "shares": 190 },
+      { "ticker": "GHC", "shares": 160 },
+      { "ticker": "ION", "shares": 140 }
+    ]
+  },
+  {
+    "portfolio_id": "PF-DEF",
+    "name": "Steady Shield",
+    "strategy": "Capital preservation through essential services and logistics.",
+    "risk_profile": "Conservative",
+    "cash_reserve": 52000,
+    "holdings": [
+      { "ticker": "DYN", "shares": 200 },
+      { "ticker": "ELM", "shares": 310 },
+      { "ticker": "KRS", "shares": 95 }
+    ]
+  }
+]

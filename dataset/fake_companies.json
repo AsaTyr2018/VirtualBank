@@ -1,0 +1,122 @@
+[
+  {
+    "ticker": "AVX",
+    "name": "Aventix Labs",
+    "sector": "Biotech",
+    "region": "North America",
+    "market_cap_millions": 1280,
+    "base_price": 42.15,
+    "volatility": 0.27,
+    "story": "Clinical-stage biotech focused on adaptive antiviral therapies for virtual pandemics."
+  },
+  {
+    "ticker": "BQE",
+    "name": "BlueQuartz Energy",
+    "sector": "Renewable Energy",
+    "region": "Europe",
+    "market_cap_millions": 2245,
+    "base_price": 68.74,
+    "volatility": 0.19,
+    "story": "Utility-scale floating solar arrays powering coastal smart cities across the simulation."
+  },
+  {
+    "ticker": "CRN",
+    "name": "Chronicle Networks",
+    "sector": "Information Technology",
+    "region": "Asia-Pacific",
+    "market_cap_millions": 5100,
+    "base_price": 115.33,
+    "volatility": 0.32,
+    "story": "Latency-free quantum mesh routers connecting gamer guilds and financial hubs."
+  },
+  {
+    "ticker": "DYN",
+    "name": "Dynamo Freight",
+    "sector": "Logistics",
+    "region": "North America",
+    "market_cap_millions": 1875,
+    "base_price": 57.9,
+    "volatility": 0.22,
+    "story": "Autonomous freight pods coordinating real-time supply chains for virtual retailers."
+  },
+  {
+    "ticker": "ELM",
+    "name": "Elm Grove Foods",
+    "sector": "Consumer Staples",
+    "region": "South America",
+    "market_cap_millions": 930,
+    "base_price": 24.68,
+    "volatility": 0.15,
+    "story": "Vertical farm collectives supplying nutrient-rich produce to megacities."
+  },
+  {
+    "ticker": "FLR",
+    "name": "Flarion Entertainment",
+    "sector": "Media & Gaming",
+    "region": "Global",
+    "market_cap_millions": 3025,
+    "base_price": 73.41,
+    "volatility": 0.35,
+    "story": "Immersive holo-arenas broadcasting esports and narrative-driven interactive dramas."
+  },
+  {
+    "ticker": "GHC",
+    "name": "GreenHorizon Capital",
+    "sector": "Financial Services",
+    "region": "Europe",
+    "market_cap_millions": 1460,
+    "base_price": 39.28,
+    "volatility": 0.18,
+    "story": "Impact-focused investment firm underwriting sustainability ventures in-game."
+  },
+  {
+    "ticker": "HYS",
+    "name": "HydraSynth Materials",
+    "sector": "Advanced Materials",
+    "region": "Asia-Pacific",
+    "market_cap_millions": 2675,
+    "base_price": 88.05,
+    "volatility": 0.29,
+    "story": "Programmable composites enabling adaptive architecture and vehicles."
+  },
+  {
+    "ticker": "ION",
+    "name": "Ionwave Mobility",
+    "sector": "Transportation",
+    "region": "Middle East",
+    "market_cap_millions": 1988,
+    "base_price": 64.57,
+    "volatility": 0.24,
+    "story": "Hyperloop corridors and aerial taxis linking trade oases and financial districts."
+  },
+  {
+    "ticker": "JDE",
+    "name": "JadeEcho Studios",
+    "sector": "Media & Gaming",
+    "region": "Asia-Pacific",
+    "market_cap_millions": 1580,
+    "base_price": 51.92,
+    "volatility": 0.31,
+    "story": "Story-forward interactive cinema fusing live performers with AI companions."
+  },
+  {
+    "ticker": "KRS",
+    "name": "Kerasan Health",
+    "sector": "Healthcare",
+    "region": "North America",
+    "market_cap_millions": 2750,
+    "base_price": 89.77,
+    "volatility": 0.26,
+    "story": "Telehealth cooperative offering personalized care navigation in the metaverse."
+  },
+  {
+    "ticker": "LUM",
+    "name": "LumenForge Systems",
+    "sector": "Industrial Tech",
+    "region": "Europe",
+    "market_cap_millions": 3210,
+    "base_price": 97.65,
+    "volatility": 0.28,
+    "story": "Photon-powered fabrication plants producing modular infrastructure kits."
+  }
+]
