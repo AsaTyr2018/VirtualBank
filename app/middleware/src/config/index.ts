@@ -13,5 +13,9 @@ export const config = {
   idempotency: {
     ttlSeconds: Number(env.IDEMPOTENCY_TTL_SECONDS ?? '600')
   },
-  publicBaseUrl: env.PUBLIC_BASE_URL ?? `http://${env.MIDDLEWARE_HOST ?? '0.0.0.0'}:${env.MIDDLEWARE_PORT ?? '8080'}`
+  publicBaseUrl:
+    env.PUBLIC_BASE_URL ?? `http://${env.MIDDLEWARE_HOST ?? '0.0.0.0'}:${env.MIDDLEWARE_PORT ?? '8080'}`,
+  sessionStream: {
+    heartbeatSeconds: Number(env.SESSION_STREAM_HEARTBEAT_SECONDS ?? '30')
+  }
 } as const;

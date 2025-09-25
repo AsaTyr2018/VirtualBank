@@ -4,11 +4,15 @@ import helmet from '@fastify/helmet';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import websocket from '@fastify/websocket';
 import { config } from './config/index.js';
 import { idempotencyPlugin } from './plugins/idempotency.js';
 import { decoratorPlugin } from './plugins/decorators.js';
 import { healthRoutes } from './routes/health.js';
 import { transferRoutes } from './routes/transfers.js';
+import { creditRoutes } from './routes/credits.js';
+import { marketRoutes } from './routes/market.js';
+import { sessionRoutes } from './routes/sessions.js';
 
 async function buildServer() {
   const app = Fastify({
@@ -25,11 +29,15 @@ async function buildServer() {
     max: config.rateLimit.max,
     timeWindow: config.rateLimit.timeWindow
   });
+  await app.register(websocket);
   await app.register(decoratorPlugin);
   await app.register(idempotencyPlugin, { ttlSeconds: config.idempotency.ttlSeconds });
 
   await app.register(healthRoutes);
   await app.register(transferRoutes);
+  await app.register(creditRoutes);
+  await app.register(marketRoutes);
+  await app.register(sessionRoutes);
 
   return app;
 }
