@@ -6,7 +6,8 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 1. Clone the repository and install dependencies for the middleware prototype: `cd app/middleware && npm install`.
 2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
 3. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
-4. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
+4. Launch the data store foundation locally with `docker compose -f datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture.
+5. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
@@ -25,7 +26,19 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
   - [`docs/design/Data Stores/data-store-architecture.md`](docs/design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
 - [`docs/dataset/`](docs/dataset/) – Curated fake companies and portfolio seeds for market-simulation testing.
 - [`middleware-compose.yml`](middleware-compose.yml) – Dedicated Docker Compose stack for the middleware core service.
+- [`datastore-compose.yml`](datastore-compose.yml) – Infrastructure sandbox that provisions PostgreSQL (primary/replica), Redis, Kafka, ClickHouse, and MinIO services for local development.
 - [`Changelog/Changelog.md`](Changelog/Changelog.md) – Running log of product and documentation updates.
+
+## Data Store Stack
+The `datastore-compose.yml` stack mirrors the architecture defined in the data store blueprint. It provisions:
+
+- **PostgreSQL primary and read replica** with synchronous replication defaults for ledger-grade consistency.
+- **Redis cache** to accelerate hot lookups and pub/sub invalidation flows.
+- **Kafka broker (KRaft mode)** to emit change-data-capture events for downstream consumers.
+- **ClickHouse warehouse** for analytical workloads and compliance-grade reporting drills.
+- **MinIO object storage** acting as the archive bucket for snapshots, exports, and recovery artifacts.
+
+Bring the stack online with `docker compose -f datastore-compose.yml up --build` and connect services using the shared `datastore-net` bridge network. Default credentials are scoped to local development and should be replaced in production-like scenarios.
 
 ## Middleware Core Service
 - **Endpoints:**
