@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VirtualBank Experience | Staff Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        VirtualBank <span>Experience</span>
+      </div>
+      <div class="actions">
+        <a class="btn-secondary" href="index.html">Back to experience</a>
+      </div>
+    </nav>
+    <main>
+      <section class="shell admin-hero card card-muted">
+        <span class="tag">Dedicated staff entry</span>
+        <h1>Trustworthy controls for VirtualBank administrators</h1>
+        <p>
+          Authorize new accounts, monitor transfers, and oversee support escalations from a secure control panel.
+          This space is restricted to staff members—no self-registration is available.
+        </p>
+        <form style="margin-top: 2rem;" class="grid" action="#" method="post">
+          <div class="input-group">
+            <label for="admin-username">Staff username</label>
+            <input id="admin-username" type="text" name="username" placeholder="e.g. gm.celeste" required />
+          </div>
+          <div class="input-group">
+            <label for="admin-passcode">Passcode</label>
+            <input id="admin-passcode" type="password" name="passcode" placeholder="Enter passcode" required />
+          </div>
+          <div class="input-group">
+            <label for="admin-role">Role</label>
+            <select id="admin-role" name="role">
+              <option value="operations">Operations</option>
+              <option value="compliance">Compliance</option>
+              <option value="support">Customer Success</option>
+              <option value="engineering">Engineering</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit" style="justify-self: flex-start;">Enter staff console</button>
+        </form>
+        <p class="footer">
+          Access attempts are logged for audit purposes. Please contact the Chief Experience Officer for credential support.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

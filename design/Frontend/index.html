@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VirtualBank Experience | Welcome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="brand">
+        VirtualBank <span>Experience</span>
+      </div>
+      <div class="actions">
+        <a class="btn-ghost" href="uxAdmin.html">Staff Sign-in</a>
+        <a class="btn-secondary" href="dashboard.html">Preview Dashboard</a>
+      </div>
+    </nav>
+    <main>
+      <section class="shell hero">
+        <div class="hero-visual">
+          <span class="tag">Modern banking playground</span>
+          <h1>Warm, intuitive finance journeys crafted for every player.</h1>
+          <p>
+            Explore a premium login and onboarding flow that welcomes customers into a
+            rich banking universe. Every user receives a unique account number alongside
+            their username to keep transfers effortless and personal.
+          </p>
+          <div class="stats">
+            <div class="stat">
+              <span>+128K</span>
+              <small>Successful simulated transfers</small>
+            </div>
+            <div class="stat">
+              <span>98%</span>
+              <small>Satisfaction with onboarding experience</small>
+            </div>
+            <div class="stat">
+              <span>24/7</span>
+              <small>Staff oversight via dedicated access</small>
+            </div>
+          </div>
+        </div>
+        <div class="hero-auth card card-muted">
+          <div class="auth-toggle">
+            <button class="active" data-auth-toggle="login">Sign In</button>
+            <button data-auth-toggle="register">Create Account</button>
+          </div>
+          <div class="auth-forms">
+            <form class="auth-panel active" data-auth-panel="login">
+              <h2>Welcome back</h2>
+              <p>Log into your VirtualBank account to manage balances, transfers, and portfolios.</p>
+              <div class="input-group">
+                <label for="login-username">Username</label>
+                <input id="login-username" type="text" name="username" placeholder="e.g. avery.clark" required />
+              </div>
+              <div class="input-group">
+                <label for="login-password">Password</label>
+                <input id="login-password" type="password" name="password" placeholder="Enter your password" required />
+              </div>
+              <div class="link-row">
+                <label>
+                  <input type="checkbox" name="remember" />
+                  Keep me signed in
+                </label>
+                <a href="#">Forgot details?</a>
+              </div>
+              <button class="btn btn-primary" type="submit">Access my dashboard</button>
+              <p class="footer">
+                Need to trade stocks? Access the Market Desk from your dashboard via a dedicated launchpad.
+              </p>
+            </form>
+            <form class="auth-panel" data-auth-panel="register">
+              <h2>Open your account</h2>
+              <p>Create a secure profile and receive a unique VirtualBank account number in seconds.</p>
+              <div class="grid grid-2">
+                <div class="input-group">
+                  <label for="register-first-name">First name</label>
+                  <input id="register-first-name" type="text" name="first-name" placeholder="Avery" required />
+                </div>
+                <div class="input-group">
+                  <label for="register-last-name">Last name</label>
+                  <input id="register-last-name" type="text" name="last-name" placeholder="Clark" required />
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="register-username">Username</label>
+                <input id="register-username" type="text" name="username" placeholder="avery.clark" required />
+              </div>
+              <div class="grid grid-2">
+                <div class="input-group">
+                  <label for="register-email">Email address</label>
+                  <input id="register-email" type="email" name="email" placeholder="avery@example.com" required />
+                </div>
+                <div class="input-group">
+                  <label for="register-phone">Phone</label>
+                  <input id="register-phone" type="tel" name="phone" placeholder="(+49) 123 456 789" />
+                </div>
+              </div>
+              <div class="grid grid-2">
+                <div class="input-group">
+                  <label for="register-password">Password</label>
+                  <input id="register-password" type="password" name="password" placeholder="Create a password" required />
+                </div>
+                <div class="input-group">
+                  <label for="register-confirm">Confirm password</label>
+                  <input id="register-confirm" type="password" name="confirm-password" placeholder="Repeat password" required />
+                </div>
+              </div>
+              <button class="btn btn-primary" type="submit">Create my VirtualBank profile</button>
+              <p class="footer">
+                Administrators have a dedicated entry point via <a href="uxAdmin.html">/uxAdmin</a> with enhanced controls.
+              </p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="assets/js/auth.js"></script>
+  </body>
+</html>

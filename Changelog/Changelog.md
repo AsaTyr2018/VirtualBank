@@ -1,5 +1,10 @@
 # Changelog
 
+# [2025-10-04] Frontend Experience Prototypes
+- **Change Type:** Normal Change
+- **Reason:** Craft a warm, professional customer journey that reflects the desired UX-first VirtualBank experience for players and staff.
+- **What Changed:** Designed the frontend workspace with polished login, registration, dashboard, and administrator HTML prototypes, introduced shared styling and interaction scripts, refreshed the README to surface the new assets, and documented the update here.
+
 # [2025-10-03] Middleware Ledger Consolidation
 - **Change Type:** Normal Change
 - **Reason:** Retire the separate core banking layer now that middleware owns ledger responsibilities, keeping documentation aligned with the updated architecture.
