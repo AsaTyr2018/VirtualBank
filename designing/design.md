@@ -8,15 +8,19 @@
 
 ## 2. Architecture Overview
 - **Client (Frontend)**: React-based single-page application that consumes RESTful APIs and real-time event streams.
-- **Middleware**: Node.js service acting as an API gateway and orchestrator, responsible for request validation, caching, and security enforcement.
-- **Backend Services**: Microservice suite implemented with TypeScript (NestJS) and PostgreSQL for persistent storage, accompanied by a Redis instance for ephemeral data.
-- **Market Simulation Context**: Independent stock-market sandbox exposed through APIs and event streams, operating alongside the middleware while respecting shared observability and identity standards.
+- **Middleware Gateway & Stockmarket Bridge**: Node.js service acting as the unified API gateway that validates requests, applies caching and security policies, and routes player intents to both the core banking mesh and the stockmarket simulation.
+- **Core Banking Services**: Microservice suite implemented with TypeScript (NestJS) and PostgreSQL for persistent storage, accompanied by a Redis instance for ephemeral data.
+- **Data Stores**: Polyglot persistence layer combining relational schemas, event streams, and time-series storage for transactional, analytical, and market data needs.
+- **Stockmarket Simulation**: Domain sandbox providing synthetic markets, portfolios, and analytics that integrate with the middleware for identity, telemetry, and governance.
 - **Infrastructure**: Containerized deployment using Docker and Kubernetes, with CI/CD pipelines enforcing quality gates and automated testing.
 
-```
-[Frontend SPA] ⇄ [Middleware Gateway] ⇄ [Core Banking Microservices]
-                                      ⇅
-                                  [Data Stores]
+```mermaid
+graph LR
+    Frontend[Frontend SPA] <--> Middleware[Middleware Gateway &\nStockmarket Bridge]
+    Middleware --> CoreBanking[Core Banking Microservices]
+    CoreBanking --> DataStores[(Data Stores)]
+    Middleware --> StockMarket[Stockmarket Simulation]
+    StockMarket --> DataStores
 ```
 
 ## 3. Frontend Experience Design
