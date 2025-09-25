@@ -1,11 +1,13 @@
 import 'fastify';
 import type { config } from '../config/index.js';
+import type { Datastore } from '../plugins/datastore.js';
 
 type ConfigShape = typeof config;
 
 declare module 'fastify' {
   interface FastifyInstance {
     config: ConfigShape;
+    datastore: Datastore;
     utils: {
       generateTransferId: (sourceAccountId: string, destinationAccountId: string) => string;
       generateCreditApplicationId: (playerId: string, accountId: string) => string;

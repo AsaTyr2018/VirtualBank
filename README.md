@@ -7,7 +7,7 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
 3. Bootstrap the new frontend shell with `cd app/frontend && npm install` followed by `npm run dev` (served from `http://localhost:5173`).
 4. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
-5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture.
+5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Automated Maintenance
@@ -21,6 +21,8 @@ The `scripts/maintenance.sh` helper orchestrates installation and lifecycle task
 | `check-updates` | Contacts GitHub to determine whether newer commits are available without applying changes. |
 
 Example usage: `sudo ./scripts/maintenance.sh install`.
+
+Both `install` and `update` wait for the PostgreSQL primary to become ready and then seed the `market_companies` table so new deployments instantly expose the fake companies dataset.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
@@ -62,12 +64,13 @@ Bring the stack online with `docker compose -f apps/datastore/datastore-compose.
 
 ## Middleware Core Service
 - **Endpoints:**
-  - Health probe at `/health/live`.
+  - Liveness probe at `/health/live` and readiness probe at `/health/ready` (includes datastore status).
   - Transfer intake at `/api/v1/transfers` with status retrieval at `/api/v1/transfers/:id`.
   - Credit line intake at `/api/v1/credits/applications` for Game Master scoring workflows.
   - Market order intake at `/api/v1/market/orders` with limit-order validation.
 - **Streaming:** WebSocket stream at `/api/v1/sessions/stream` that emits ready, heartbeat, and demo portfolio updates so the frontend can wire real-time dashboards.
 - **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging hooks for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
+- **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. Defaults target the Compose stack (`vb_app`/`vb_app_password` on `localhost:5432`), or provide a `DATASTORE_URL` connection string when running against managed instances.
 - **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.
 
 ## Datasets

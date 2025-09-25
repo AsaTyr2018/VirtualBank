@@ -5,6 +5,9 @@ REPO_URL="https://github.com/AsaTyr2018/VirtualBank"
 INSTALL_DIR="/opt/VirtualBank"
 COMPOSE_FILE="middleware-compose.yml"
 DATASTORE_COMPOSE="apps/datastore/datastore-compose.yml"
+POSTGRES_PRIMARY_CONTAINER="vb-postgres-primary"
+POSTGRES_DATABASE="virtualbank"
+POSTGRES_USER="vb_app"
 
 log() { printf "[%(%Y-%m-%dT%H:%M:%S%z)T] %s\n" -1 "$*"; }
 error() { log "ERROR: $*" >&2; }
@@ -158,9 +161,62 @@ rebuild_stack() {
     log "Ensuring datastore stack is prepared using ${compose_cmd}."
     (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" pull)
     (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" up -d --build)
+    seed_fake_companies
   else
     log "Datastore compose file not found; skipping datastore deployment."
   fi
+}
+
+wait_for_postgres_primary() {
+  local retries=0
+  local max_retries=30
+  while (( retries < max_retries )); do
+    if docker exec "$POSTGRES_PRIMARY_CONTAINER" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DATABASE" >/dev/null 2>&1; then
+      return 0
+    fi
+    retries=$((retries + 1))
+    sleep 2
+  done
+  return 1
+}
+
+seed_fake_companies() {
+  if ! docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_PRIMARY_CONTAINER}$"; then
+    log "PostgreSQL primary container not running; skipping fake company seed."
+    return
+  fi
+
+  local dataset_path="${INSTALL_DIR}/docs/dataset/fake_companies.json"
+  local seed_sql_path="${INSTALL_DIR}/scripts/sql/seed_fake_companies.sql"
+
+  if [[ ! -f "$dataset_path" ]]; then
+    log "Dataset file $dataset_path not found; skipping fake company seed."
+    return
+  fi
+
+  if [[ ! -f "$seed_sql_path" ]]; then
+    log "Seed SQL $seed_sql_path not found; skipping fake company seed."
+    return
+  fi
+
+  log "Waiting for PostgreSQL primary to accept connections before seeding."
+  if ! wait_for_postgres_primary; then
+    error "PostgreSQL primary did not become ready in time; skipping fake company seed."
+    return
+  fi
+
+  log "Copying dataset and seed script into ${POSTGRES_PRIMARY_CONTAINER}."
+  docker cp "$dataset_path" "${POSTGRES_PRIMARY_CONTAINER}:/tmp/fake_companies.json"
+  docker cp "$seed_sql_path" "${POSTGRES_PRIMARY_CONTAINER}:/tmp/seed_fake_companies.sql"
+
+  log "Seeding fake companies into PostgreSQL."
+  if docker exec "$POSTGRES_PRIMARY_CONTAINER" bash -c "psql -U '$POSTGRES_USER' -d '$POSTGRES_DATABASE' -f /tmp/seed_fake_companies.sql"; then
+    log "Fake company dataset applied successfully."
+  else
+    error "Failed to seed fake company dataset."
+  fi
+
+  docker exec "$POSTGRES_PRIMARY_CONTAINER" rm -f /tmp/fake_companies.json /tmp/seed_fake_companies.sql >/dev/null 2>&1 || true
 }
 
 install_virtualbank() {

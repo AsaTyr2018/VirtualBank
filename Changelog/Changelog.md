@@ -1,4 +1,8 @@
 # Changelog
+## [0.00.021] Middleware Datastore Wiring
+- **Change Type:** Normal Change
+- **Reason:** Ensure the middleware can talk to PostgreSQL out of the box and ship environments with the fake market dataset preloaded.
+- **What Changed:** Added a Fastify datastore plugin with health-aware readiness reporting, introduced PostgreSQL connection configuration via `DATASTORE_*` variables, updated the maintenance script to wait for the primary and seed `market_companies` from `docs/dataset/fake_companies.json`, refreshed the README with the new readiness probe and configuration notes, and documented the enhancement here.
 ## [0.00.020] Automated Maintenance Toolkit
 - **Change Type:** Normal Change
 - **Reason:** Provide administrators with a reliable way to install, update, and remove VirtualBank environments with minimal manual effort.

@@ -12,7 +12,19 @@ const EnvSchema = Type.Object({
   RATE_LIMIT_TIME_WINDOW: Type.Optional(Type.String({ default: '1 minute' })),
   IDEMPOTENCY_TTL_SECONDS: Type.Optional(Type.String({ default: '600' })),
   PUBLIC_BASE_URL: Type.Optional(Type.String()),
-  SESSION_STREAM_HEARTBEAT_SECONDS: Type.Optional(Type.String({ default: '30' }))
+  SESSION_STREAM_HEARTBEAT_SECONDS: Type.Optional(Type.String({ default: '30' })),
+  DATASTORE_URL: Type.Optional(Type.String()),
+  DATASTORE_HOST: Type.Optional(Type.String({ default: 'localhost' })),
+  DATASTORE_PORT: Type.Optional(Type.String({ default: '5432' })),
+  DATASTORE_USER: Type.Optional(Type.String({ default: 'vb_app' })),
+  DATASTORE_PASSWORD: Type.Optional(Type.String({ default: 'vb_app_password' })),
+  DATASTORE_DATABASE: Type.Optional(Type.String({ default: 'virtualbank' })),
+  DATASTORE_SSL_MODE: Type.Optional(
+    Type.Union([Type.Literal('disable'), Type.Literal('require')], { default: 'disable' })
+  ),
+  DATASTORE_POOL_MAX: Type.Optional(Type.String({ default: '10' })),
+  DATASTORE_POOL_IDLE_MS: Type.Optional(Type.String({ default: '10000' })),
+  DATASTORE_POOL_CONNECTION_TIMEOUT_MS: Type.Optional(Type.String({ default: '5000' }))
 });
 
 export type EnvConfig = Static<typeof EnvSchema>;
@@ -34,6 +46,16 @@ export function parseEnv(env: NodeJS.ProcessEnv): EnvConfig {
     RATE_LIMIT_TIME_WINDOW: result.RATE_LIMIT_TIME_WINDOW ?? '1 minute',
     IDEMPOTENCY_TTL_SECONDS: result.IDEMPOTENCY_TTL_SECONDS ?? '600',
     PUBLIC_BASE_URL: result.PUBLIC_BASE_URL,
-    SESSION_STREAM_HEARTBEAT_SECONDS: result.SESSION_STREAM_HEARTBEAT_SECONDS ?? '30'
+    SESSION_STREAM_HEARTBEAT_SECONDS: result.SESSION_STREAM_HEARTBEAT_SECONDS ?? '30',
+    DATASTORE_URL: result.DATASTORE_URL,
+    DATASTORE_HOST: result.DATASTORE_HOST ?? 'localhost',
+    DATASTORE_PORT: result.DATASTORE_PORT ?? '5432',
+    DATASTORE_USER: result.DATASTORE_USER ?? 'vb_app',
+    DATASTORE_PASSWORD: result.DATASTORE_PASSWORD ?? 'vb_app_password',
+    DATASTORE_DATABASE: result.DATASTORE_DATABASE ?? 'virtualbank',
+    DATASTORE_SSL_MODE: (result.DATASTORE_SSL_MODE as EnvConfig['DATASTORE_SSL_MODE']) ?? 'disable',
+    DATASTORE_POOL_MAX: result.DATASTORE_POOL_MAX ?? '10',
+    DATASTORE_POOL_IDLE_MS: result.DATASTORE_POOL_IDLE_MS ?? '10000',
+    DATASTORE_POOL_CONNECTION_TIMEOUT_MS: result.DATASTORE_POOL_CONNECTION_TIMEOUT_MS ?? '5000'
   };
 }
