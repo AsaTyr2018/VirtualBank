@@ -1,4 +1,9 @@
 # Changelog
+
+## [0.00.024] Compose Stack Separation
+- **Change Type:** Standard Change
+- **Reason:** Combined Docker orchestration blurred the intended boundary between frontend and middleware services, complicating targeted deployments and violating the component separation blueprint.
+- **What Changed:** Removed the frontend container from `middleware-compose.yml`, introduced a dedicated `frontend-compose.yml`, refreshed the README quickstart and frontend notes to highlight isolated stacks, and aligned the middleware dependencies so Fastify plugins match the deployed major version.
 ## [0.00.023] Middleware Stack Recovery
 - **Change Type:** Emergency Change
 - **Reason:** The middleware container crashed on boot due to a Fastify plugin version mismatch and the maintenance script could not seed PostgreSQL because authentication details were missing; the shared stack also never exposed the frontend, leaving the experience inaccessible.
