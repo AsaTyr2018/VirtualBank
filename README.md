@@ -7,9 +7,11 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 - **Modular architecture** spanning a rich frontend, a secure middleware gateway, and resilient backend microservices.
 - **Multi-user economy** where every player controls a personal account, Game Masters steward the world, and the system supports credits, yields, and diverse income streams.
 - **Fictional currency** that mimics real banking flows without touching actual money.
+- **Dynamic stock market sandbox** featuring AI-driven price regimes, sector indices, and fair-play trading mechanics for users to buy and sell virtual equities.
 
 ## Project Structure
 - `designing/design.md` – End-to-end blueprint covering frontend, middleware, and backend design decisions.
+- Market simulation architecture, gameplay surfaces, and risk controls are detailed in Section 5.4 of the design blueprint.
 - `Changelog/Changelog.md` – Running log of product and documentation updates.
 
 ## Getting Started
