@@ -38,7 +38,7 @@ The VirtualBank data store stack safeguards every fictional balance, transaction
 | Domain | Tables/Streams | Description |
 | --- | --- | --- |
 | **Identity & Access** | `users`, `roles`, `sessions` | Profiles, role assignments, authentication metadata. Session tokens cached in Redis. |
-| **Core Banking** | `accounts`, `account_balances`, `transfers`, `ledger_entries` | Double-entry ledger guaranteeing deterministic balances. Write path uses serializable transactions. |
+| **Ledger & Transfers** | `accounts`, `account_balances`, `transfers`, `ledger_entries` | Double-entry ledger guaranteeing deterministic balances. Write path uses serializable transactions. |
 | **Market Trading** | `orders`, `trades`, `positions`, `quotes` | Handles order lifecycle, executed trades, and holdings per user. Quotes ingested from the stock market engine via Kafka. |
 | **Market Reference Data** | `securities`, `indices`, `market_calendar` | Static/semi-static metadata fed by world-building scripts. |
 | **Risk & Limits** | `exposure_limits`, `breach_events`, `alerts` | Tracks automated guardrails triggered by middleware or market engine. |
@@ -54,7 +54,7 @@ The VirtualBank data store stack safeguards every fictional balance, transaction
 ## 6. Data Flow with the Stock Market Engine
 - **Market Data Ingestion:** The engine streams tick updates and synthetic fundamentals into Kafka topics (`market.quotes`, `market.news`). A Kafka Connect pipeline hydrates PostgreSQL (`quotes` table) and Redis caches.
 - **Order Routing:** Middleware receives orders from the frontend, validates limits, and writes to `orders`. A dedicated market-matching service pulls from the order queue (via PostgreSQL LISTEN/NOTIFY or Kafka) to execute trades.
-- **Trade Settlement:** Executed trades result in atomic updates across `trades`, `positions`, and the core banking ledger to reflect debits/credits.
+- **Trade Settlement:** Executed trades result in atomic updates across `trades`, `positions`, and the middleware ledger tables to reflect debits/credits.
 - **Risk Feedback Loop:** Breach events detected by the engine are written back into `breach_events` and surfaced to the middleware for user messaging.
 
 ## 7. Data Flow with the Frontend

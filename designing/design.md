@@ -8,17 +8,15 @@
 
 ## 2. Architecture Overview
 - **Client (Frontend)**: React-based single-page application that consumes RESTful APIs and real-time event streams.
-- **Middleware Gateway & Stockmarket Bridge**: Node.js service acting as the unified API gateway that validates requests, applies caching and security policies, and routes player intents to both the core banking mesh and the stockmarket simulation.
-- **Core Banking Services**: Microservice suite implemented with TypeScript (NestJS) and PostgreSQL for persistent storage, accompanied by a Redis instance for ephemeral data.
+- **Middleware Gateway & Ledger Orchestrator**: Node.js service acting as the unified API gateway that validates requests, applies caching and security policies, and routes player intents to the internal ledger engine alongside the stockmarket simulation.
 - **Data Stores**: Polyglot persistence layer combining relational schemas, event streams, and time-series storage for transactional, analytical, and market data needs.
 - **Stockmarket Simulation**: Domain sandbox providing synthetic markets, portfolios, and analytics that integrate with the middleware for identity, telemetry, and governance.
 - **Infrastructure**: Containerized deployment using Docker and Kubernetes, with CI/CD pipelines enforcing quality gates and automated testing.
 
 ```mermaid
 graph LR
-    Frontend[Frontend SPA] <--> Middleware[Middleware Gateway &\nStockmarket Bridge]
-    Middleware --> CoreBanking[Core Banking Microservices]
-    CoreBanking --> DataStores[(Data Stores)]
+    Frontend[Frontend SPA] <--> Middleware[Middleware Gateway &\nLedger Orchestrator]
+    Middleware --> DataStores[(Ledger & Market Data Stores)]
     Middleware --> StockMarket[Stockmarket Simulation]
     StockMarket --> DataStores
 ```
@@ -73,6 +71,7 @@ graph LR
 - Attribute-based access control enriches role policies with account ownership metadata, allowing safe delegation (e.g., guardians managing youth accounts).
 
 ## 5. Backend Design
+With the dedicated core banking tier retired, the middleware owns the entire transactional backend. Domain-specific modules run alongside the gateway, sharing infrastructure while remaining logically separated for clarity and scaling.
 ### 5.1 Service Composition
 - **User & Identity Service**: Registers players, Game Masters, and optional observers; manages authentication artifacts and role claims.
 - **Account Service**: Manages virtual accounts, balances, and account metadata, including joint or custodial setups.

@@ -30,7 +30,7 @@ flowchart LR
         Timescale[(TimescaleDB\nPrice Series)]
         Redis[(Redis Streams)]
         ObjectStore[(Object Storage\nReplays)]
-        CoreDB[(Core Banking\nPostgreSQL)]
+        LedgerDB[(Ledger Schema\nPostgreSQL)]
     end
 
     Frontend <-- WebSockets --> Middleware
@@ -42,7 +42,7 @@ flowchart LR
 
     MDS --> Timescale
     ME --> Redis
-    PS --> CoreDB
+    PS --> LedgerDB
     LAS --> ObjectStore
     LAS --> Timescale
     RSS --> Redis
@@ -89,9 +89,9 @@ A configurable scheduler rotates the market through scenarios defined in [`desig
 - Subscribes to Redis streams (order book, trades, news) and fans out updates over WebSockets to subscribed clients.
 - Applies rate limiting and order throttling before forwarding to the Matching Engine.
 
-### 4.2 Core Banking Interop
-- Portfolio Service synchronizes cash balances with the Core Banking Account Service after each fill.
-- Settlement occurs in fun currency using middleware-facilitated ledger transfers, ensuring buying power updates propagate to the general dashboard.
+### 4.2 Middleware Ledger Interop
+- Portfolio Service synchronizes cash balances with the middleware-managed ledger schemas after each fill.
+- Settlement occurs in fun currency using middleware-facilitated transfer procedures, ensuring buying power updates propagate to the general dashboard.
 - Dividend and fee events create ledger entries attributed to the "Market" counterparty for transparency.
 
 ### 4.3 Frontend Market Desk
@@ -144,7 +144,7 @@ Middleware exposes consolidated REST routes (`/api/market/...`) and multiplexed 
 To consider the Stockmarket component production-ready:
 1. All services expose authenticated REST and WebSocket interfaces covered by contract tests.
 2. Real-time price feeds maintain <250ms latency from generation to client render in steady state.
-3. Portfolio balances reconcile with core banking ledgers within one second after fills.
+3. Portfolio balances reconcile with middleware ledger tables within one second after fills.
 4. Circuit breaker and risk enforcement rules are verified via simulation scenarios.
 5. Observability dashboards display green across tick rate, order latency, error budget, and halt notifications.
 6. README and Changelog stay synchronized with capability updates.
