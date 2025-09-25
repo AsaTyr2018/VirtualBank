@@ -1,5 +1,10 @@
 # Changelog
 
+# [2025-10-03] Middleware Ledger Consolidation
+- **Change Type:** Normal Change
+- **Reason:** Retire the separate core banking layer now that middleware owns ledger responsibilities, keeping documentation aligned with the updated architecture.
+- **What Changed:** Removed the legacy core banking workspace, updated the design blueprint, middleware, stockmarket, and data store documents to describe the middleware-led ledger flow, refreshed the README to reflect the streamlined structure, and documented the update here.
+
 ## [2025-10-02] Data Store Architecture Blueprint
 - **Change Type:** Normal Change
 - **Reason:** Define a resilient storage backbone so engineering teams can build VirtualBank features atop a trustworthy data platform.

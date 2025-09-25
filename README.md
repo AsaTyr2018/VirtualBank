@@ -4,14 +4,14 @@ VirtualBank is a playful online banking simulator that lets users explore modern
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
-- **Modular architecture** spanning a rich frontend, a secure middleware gateway, and resilient backend microservices.
+- **Modular architecture** spanning a rich frontend, a secure middleware gateway with embedded ledger services, and resilient market simulation components.
 - **Multi-user economy** where every player controls a personal account, Game Masters steward the world, and the system supports credits, yields, and diverse income streams.
 - **Fictional currency** that mimics real banking flows without touching actual money.
 - **Dynamic stock market sandbox** featuring AI-driven price regimes, sector indices, and fair-play trading mechanics for users to buy and sell virtual equities.
 
 ## Project Structure
 - `designing/design.md` – End-to-end blueprint covering frontend, middleware, and backend design decisions.
-- `design/` – Thematic workspaces (`Frontend`, `Middleware`, `Core Banking`, `Data Stores`, `Stockmarket`) ready for focused design notes.
+- `design/` – Thematic workspaces (`Frontend`, `Middleware`, `Data Stores`, `Stockmarket`) ready for focused design notes.
   - [`design/Middleware/middleware-core-service.md`](design/Middleware/middleware-core-service.md) – Middleware server architecture covering APIs, sagas, SSH operations, and deployment practices.
   - [`design/Stockmarket/stockmarket-simulation.md`](design/Stockmarket/stockmarket-simulation.md) – Real-time market simulation blueprint spanning data generation, matching, risk, and analytics services.
   - [`design/Data Stores/data-store-architecture.md`](design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
