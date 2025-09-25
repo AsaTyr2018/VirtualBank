@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.00.025] Frontend Port Override
+- **Change Type:** Standard Change
+- **Reason:** Local development environments frequently already use port `5173`, preventing the frontend Docker stack from starting.
+- **What Changed:** Added a `FRONTEND_WEB_PORT` override to the frontend Compose stack and documented the troubleshooting steps in the README so engineers can remap the host port without editing Compose files.
 ## [0.00.024] Compose Stack Separation
 - **Change Type:** Standard Change
 - **Reason:** Combined Docker orchestration blurred the intended boundary between frontend and middleware services, complicating targeted deployments and violating the component separation blueprint.
