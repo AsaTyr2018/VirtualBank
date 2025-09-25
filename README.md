@@ -10,6 +10,18 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
+## Automated Maintenance
+The `scripts/maintenance.sh` helper orchestrates installation and lifecycle tasks for production-like environments. Execute the script as `root` (or with `sudo`) and pass one of the following commands:
+
+| Command | Description |
+| --- | --- |
+| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, and starts the middleware and datastore stacks. |
+| `update` | Pulls the latest commits, rebuilds containers, and reapplies the Docker Compose stacks. |
+| `uninstall` | Stops active Compose services, removes related volumes, and deletes `/opt/VirtualBank`. |
+| `check-updates` | Contacts GitHub to determine whether newer commits are available without applying changes. |
+
+Example usage: `sudo ./scripts/maintenance.sh install`.
+
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
 - **Secure middleware gateway** powered by Fastify, JSON Schema validation, and idempotent transaction intake.
