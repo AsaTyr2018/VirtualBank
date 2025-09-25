@@ -8,6 +8,7 @@ DATASTORE_COMPOSE="apps/datastore/datastore-compose.yml"
 POSTGRES_PRIMARY_CONTAINER="vb-postgres-primary"
 POSTGRES_DATABASE="virtualbank"
 POSTGRES_USER="vb_app"
+POSTGRES_PASSWORD="vb_app_password"
 
 log() { printf "[%(%Y-%m-%dT%H:%M:%S%z)T] %s\n" -1 "$*"; }
 error() { log "ERROR: $*" >&2; }
@@ -171,7 +172,8 @@ wait_for_postgres_primary() {
   local retries=0
   local max_retries=30
   while (( retries < max_retries )); do
-    if docker exec "$POSTGRES_PRIMARY_CONTAINER" pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DATABASE" >/dev/null 2>&1; then
+    if docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_PRIMARY_CONTAINER" \
+      pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DATABASE" >/dev/null 2>&1; then
       return 0
     fi
     retries=$((retries + 1))
@@ -210,7 +212,8 @@ seed_fake_companies() {
   docker cp "$seed_sql_path" "${POSTGRES_PRIMARY_CONTAINER}:/tmp/seed_fake_companies.sql"
 
   log "Seeding fake companies into PostgreSQL."
-  if docker exec "$POSTGRES_PRIMARY_CONTAINER" bash -c "psql -U '$POSTGRES_USER' -d '$POSTGRES_DATABASE' -f /tmp/seed_fake_companies.sql"; then
+  if docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_PRIMARY_CONTAINER" \
+    bash -c "psql -U '$POSTGRES_USER' -d '$POSTGRES_DATABASE' -f /tmp/seed_fake_companies.sql"; then
     log "Fake company dataset applied successfully."
   else
     error "Failed to seed fake company dataset."
