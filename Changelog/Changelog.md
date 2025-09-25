@@ -1,4 +1,8 @@
 # Changelog
+## [0.00.019] Frontend Experience Shell
+- **Change Type:** Normal Change
+- **Reason:** Deliver an executable foundation for the heart of the VirtualBank experience so teams can iterate on the documented UX flows.
+- **What Changed:** Added the `app/frontend` Vite + React application with onboarding, dashboard, transfer, market, admin, and settings views; introduced shared UI components and state stores inspired by the design prototypes; refreshed the README with frontend instructions and highlights; and recorded the update here.
 ## [0.00.018] Data Store Stack Folder Alignment
 - **Change Type:** Standard Change
 - **Reason:** Align infrastructure assets with the expected `apps` hierarchy so the compose stack is discoverable alongside other components.

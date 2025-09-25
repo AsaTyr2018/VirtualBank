@@ -5,9 +5,10 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 ## Quickstart
 1. Clone the repository and install dependencies for the middleware prototype: `cd app/middleware && npm install`.
 2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
-3. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
-4. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture.
-5. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
+3. Bootstrap the new frontend shell with `cd app/frontend && npm install` followed by `npm run dev` (served from `http://localhost:5173`).
+4. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
+5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture.
+6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
@@ -16,9 +17,15 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 - **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
 - **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
 
+## Frontend Experience
+- **Technology stack:** React + TypeScript + Vite with React Query and Zustand managing optimistic data flows.
+- **Feature highlights:** Guided onboarding journey, real-time dashboard metrics, celebratory transfer wizard, market desk heatmaps, and Game Master governance console.
+- **Design language:** Inspired by the [HTML concept previews](docs/design/Frontend/) with soft gradients, accessible typography, and micro-interaction friendly components.
+
 ## Project Structure
 - `app/` – Runtime services under active development.
   - [`app/middleware/`](app/middleware/) – Fastify-based middleware core service with TypeScript source, Docker image, and Compose stack.
+  - [`app/frontend/`](app/frontend/) – Vite + React experience shell implementing the onboarding, dashboard, transfer wizard, market desk, and Game Master console blueprints.
 - `apps/` – Docker Compose stacks grouped by component for local infrastructure bring-up.
   - [`apps/datastore/datastore-compose.yml`](apps/datastore/datastore-compose.yml) – PostgreSQL, Redis, Kafka, ClickHouse, and MinIO sandbox aligned with the data store blueprint.
 - `docs/` – Centralized documentation hub with licenses, datasets, and design workspaces.
