@@ -24,3 +24,8 @@
 - **Change Type:** Standard Change
 - **Reason:** Organize dedicated design areas and clarify how the stockmarket integrates through the middleware.
 - **What Changed:** Created structured subdirectories under `design/` with placeholder notes, refreshed the architecture overview diagram in `designing/design.md`, and updated the README to surface the new workspace.
+
+## [2025-09-30] Middleware Core Service Blueprint
+- **Change Type:** Normal Change
+- **Reason:** Define the core middleware server so implementation can begin with clear technology, API, and operations guidance.
+- **What Changed:** Authored `design/Middleware/middleware-core-service.md` describing the Fastify-based transaction gateway, SSH console, and deployment model; refreshed the README to link the new document and keep documentation discoverable.
