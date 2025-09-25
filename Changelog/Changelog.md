@@ -19,3 +19,8 @@
 - **Change Type:** Normal Change
 - **Reason:** Provide ready-made fake companies and starter portfolios to accelerate stock market prototyping.
 - **What Changed:** Added the `dataset/` directory with curated company and portfolio JSON files, refreshed the README to surface the dataset resources, and documented the update here.
+
+## [2025-09-29] Architecture Workspace Setup
+- **Change Type:** Standard Change
+- **Reason:** Organize dedicated design areas and clarify how the stockmarket integrates through the middleware.
+- **What Changed:** Created structured subdirectories under `design/` with placeholder notes, refreshed the architecture overview diagram in `designing/design.md`, and updated the README to surface the new workspace.
