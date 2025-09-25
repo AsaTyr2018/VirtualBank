@@ -2,7 +2,7 @@
 
 ## 1. Mission
 The middleware core service is the transactional heart of VirtualBank. It ingests player intents from the frontend, enforces
-security and compliance, coordinates the execution of multi-step banking workflows across the core services layer, and exposes
+security and compliance, coordinates the execution of multi-step banking workflows across the internal ledger domains, and exposes
 an operations surface for Game Masters via secure SSH. The service must guarantee idempotent, auditable processing while staying
 agile enough to bridge to the stockmarket simulation and future gameplay extensions.
 
@@ -11,7 +11,7 @@ agile enough to bridge to the stockmarket simulation and future gameplay extensi
 |------------|----------------|-----------|
 | Runtime | **Node.js 22 LTS + TypeScript** | Matches the existing blueprint, provides mature ecosystem and developer velocity. |
 | HTTP API | **Fastify** with JSON Schema validation (TypeBox) | High-performance routing, schema-first contracts, easy OpenAPI generation. |
-| Internal RPC | **gRPC** (via `@grpc/grpc-js`) | Binary contracts to core banking and stockmarket services, strong typing, streaming support. |
+| Internal RPC | **gRPC** (via `@grpc/grpc-js`) | Binary contracts to middleware ledger/credit modules and stockmarket services, strong typing, streaming support. |
 | Messaging | **Apache Kafka** | Durable event log for transaction lifecycle events, outbox pattern, and Game Master broadcasts. |
 | Data Access | **Prisma ORM** + PostgreSQL read replicas | Type-safe queries, connection pooling, and effortless partition routing. |
 | Caching | **Redis Cluster** | Low-latency session storage, rate limiting tokens, and saga coordination checkpoints. |
@@ -31,7 +31,7 @@ agile enough to bridge to the stockmarket simulation and future gameplay extensi
    - Handles compensation logic (e.g., reversing ledger reservations) when downstream steps fail.
 
 3. **Service Connectors**
-   - gRPC clients for Core Banking services (Accounts, Ledger, Credit) and the Stockmarket Gateway.
+   - gRPC clients for internal ledger, credit, and rewards modules plus the Stockmarket Gateway.
    - Incorporate circuit breakers, retry budgets, and timeout policies defined per dependency tier.
 
 4. **Data Access Layer**
@@ -78,18 +78,16 @@ service MarketBridge {
 sequenceDiagram
   participant FE as Frontend SPA
   participant MW as Middleware
-  participant CB as Core Banking
   participant DS as Data Store
   participant MQ as Kafka
 
   FE->>MW: POST /api/v1/transfers (idempotency-key)
   MW->>MW: Validate schema & auth
-  MW->>DS: Begin transaction + write transfer intent (outbox)
-  MW->>CB: gRPC ReserveFunds
-  CB-->>MW: Reservation confirmed
+  MW->>DS: Begin transaction + call ledger.reserve_funds()
+  DS-->>MW: Reservation confirmed
   MW->>MQ: Publish TransferInitiated event
-  MW->>CB: CommitTransfer
-  CB-->>MW: Ledger posted
+  MW->>DS: Call ledger.commit_transfer()
+  DS-->>MW: Ledger posted
   MW->>DS: Mark saga complete
   MW-->>FE: 202 Accepted + status URL
   MQ-->>FE: Transfer update via WebSocket bridge
