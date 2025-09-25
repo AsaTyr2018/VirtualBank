@@ -6,7 +6,9 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 1. Clone the repository and install dependencies for the middleware prototype: `cd app/middleware && npm install`.
 2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
 3. Bootstrap the new frontend shell with `cd app/frontend && npm install` followed by `npm run dev` (served from `http://localhost:5173`).
-4. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
+4. Prefer Docker Compose for isolated stacks:
+   - Middleware only: `docker compose -f middleware-compose.yml up --build` (publishes `http://localhost:8080`).
+   - Frontend only: `docker compose -f frontend-compose.yml up --build` (serves `http://localhost:5173`).
 5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
@@ -35,6 +37,7 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready and 
 - **Technology stack:** React + TypeScript + Vite with React Query and Zustand managing optimistic data flows.
 - **Feature highlights:** Guided onboarding journey, real-time dashboard metrics, celebratory transfer wizard, market desk heatmaps, and Game Master governance console.
 - **Design language:** Inspired by the [HTML concept previews](docs/design/Frontend/) with soft gradients, accessible typography, and micro-interaction friendly components.
+- **Docker support:** Use the dedicated Compose stack (`docker compose -f frontend-compose.yml up --build`) to build the image and run `vite preview`, making the UI available at `http://localhost:5173` without coupling it to other services.
 
 ## Project Structure
 - `app/` – Runtime services under active development.
