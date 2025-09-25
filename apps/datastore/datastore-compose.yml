@@ -1,0 +1,158 @@
+name: datastore-stack
+
+services:
+  postgres-primary:
+    image: bitnami/postgresql:16.3.0
+    container_name: vb-postgres-primary
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_USERNAME=vb_app
+      - POSTGRESQL_PASSWORD=vb_app_password
+      - POSTGRESQL_DATABASE=virtualbank
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=vb_repl
+      - POSTGRESQL_REPLICATION_PASSWORD=vb_repl_password
+      - POSTGRESQL_SYNCHRONOUS_COMMIT_MODE=on
+      - POSTGRESQL_NUM_SYNCHRONOUS_REPLICAS=1
+      - ALLOW_EMPTY_PASSWORD=no
+    volumes:
+      - postgres-primary-data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vb_app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - datastore-net
+
+  postgres-replica:
+    image: bitnami/postgresql:16.3.0
+    container_name: vb-postgres-replica
+    depends_on:
+      postgres-primary:
+        condition: service_healthy
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRESQL_USERNAME=vb_app
+      - POSTGRESQL_PASSWORD=vb_app_password
+      - POSTGRESQL_DATABASE=virtualbank
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_PRIMARY_HOST=postgres-primary
+      - POSTGRESQL_PRIMARY_PORT_NUMBER=5432
+      - POSTGRESQL_REPLICATION_USER=vb_repl
+      - POSTGRESQL_REPLICATION_PASSWORD=vb_repl_password
+      - POSTGRESQL_PRIMARY_USER=vb_app
+      - POSTGRESQL_PRIMARY_PASSWORD=vb_app_password
+      - ALLOW_EMPTY_PASSWORD=no
+    volumes:
+      - postgres-replica-data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vb_app -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - datastore-net
+
+  redis-cache:
+    image: bitnami/redis:7.2.4
+    container_name: vb-redis
+    environment:
+      - REDIS_PASSWORD=vb_redis_password
+      - ALLOW_EMPTY_PASSWORD=no
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/bitnami/redis/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $${REDIS_PASSWORD} ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - datastore-net
+
+  kafka-broker:
+    image: bitnami/kafka:3.6.2
+    container_name: vb-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-broker:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-broker:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_NUM_PARTITIONS=3
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_CLUSTER_ID=4L6g3nShT-eMCtK--X86w
+    volumes:
+      - kafka-data:/bitnami/kafka
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - datastore-net
+
+  clickhouse-warehouse:
+    image: clickhouse/clickhouse-server:23.8
+    container_name: vb-clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - clickhouse-logs:/var/log/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - datastore-net
+
+  minio-archive:
+    image: minio/minio:RELEASE.2024-01-13T07-53-03Z
+    container_name: vb-minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=vbminio
+      - MINIO_ROOT_PASSWORD=vbminio_secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - datastore-net
+
+networks:
+  datastore-net:
+    driver: bridge
+
+volumes:
+  postgres-primary-data:
+  postgres-replica-data:
+  redis-data:
+  kafka-data:
+  clickhouse-data:
+  clickhouse-logs:
+  minio-data:

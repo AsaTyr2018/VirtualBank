@@ -1,4 +1,13 @@
 # Changelog
+## [0.00.018] Data Store Stack Folder Alignment
+- **Change Type:** Standard Change
+- **Reason:** Align infrastructure assets with the expected `apps` hierarchy so the compose stack is discoverable alongside other components.
+- **What Changed:** Moved `datastore-compose.yml` to `apps/datastore/datastore-compose.yml`, refreshed README instructions and structure references to point at the new location, and documented the adjustment here.
+
+## [0.00.017] Data Store Stack Bootstrap
+- **Change Type:** Normal Change
+- **Reason:** Provide an executable storage stack so teams can validate integration paths defined in the data store architecture blueprint.
+- **What Changed:** Added `datastore-compose.yml` with PostgreSQL primary/replica, Redis, Kafka, ClickHouse, and MinIO services; refreshed the README with stack usage guidance and quickstart steps; and recorded the update here.
 
 ## [0.00.016] Middleware API Surface Expansion
 - **Change Type:** Normal Change

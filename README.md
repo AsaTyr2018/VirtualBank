@@ -6,7 +6,8 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 1. Clone the repository and install dependencies for the middleware prototype: `cd app/middleware && npm install`.
 2. Start the TypeScript Fastify server locally with `npm run dev` (listens on `http://localhost:8080`).
 3. Alternatively, use Docker Compose to run the middleware stack: `docker compose -f middleware-compose.yml up --build`.
-4. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
+4. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture.
+5. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
@@ -18,6 +19,8 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 ## Project Structure
 - `app/` – Runtime services under active development.
   - [`app/middleware/`](app/middleware/) – Fastify-based middleware core service with TypeScript source, Docker image, and Compose stack.
+- `apps/` – Docker Compose stacks grouped by component for local infrastructure bring-up.
+  - [`apps/datastore/datastore-compose.yml`](apps/datastore/datastore-compose.yml) – PostgreSQL, Redis, Kafka, ClickHouse, and MinIO sandbox aligned with the data store blueprint.
 - `docs/` – Centralized documentation hub with licenses, datasets, and design workspaces.
   - [`docs/design/Middleware/middleware-core-service.md`](docs/design/Middleware/middleware-core-service.md) – Middleware architecture covering APIs, sagas, observability, and operations.
   - [`docs/design/Frontend/`](docs/design/Frontend/) – Conceptual HTML previews for login, dashboard, and administrator experiences.
@@ -26,6 +29,17 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 - [`docs/dataset/`](docs/dataset/) – Curated fake companies and portfolio seeds for market-simulation testing.
 - [`middleware-compose.yml`](middleware-compose.yml) – Dedicated Docker Compose stack for the middleware core service.
 - [`Changelog/Changelog.md`](Changelog/Changelog.md) – Running log of product and documentation updates.
+
+## Data Store Stack
+The `apps/datastore/datastore-compose.yml` stack mirrors the architecture defined in the data store blueprint. It provisions:
+
+- **PostgreSQL primary and read replica** with synchronous replication defaults for ledger-grade consistency.
+- **Redis cache** to accelerate hot lookups and pub/sub invalidation flows.
+- **Kafka broker (KRaft mode)** to emit change-data-capture events for downstream consumers.
+- **ClickHouse warehouse** for analytical workloads and compliance-grade reporting drills.
+- **MinIO object storage** acting as the archive bucket for snapshots, exports, and recovery artifacts.
+
+Bring the stack online with `docker compose -f apps/datastore/datastore-compose.yml up --build` and connect services using the shared `datastore-net` bridge network. Default credentials are scoped to local development and should be replaced in production-like scenarios.
 
 ## Middleware Core Service
 - **Endpoints:**
