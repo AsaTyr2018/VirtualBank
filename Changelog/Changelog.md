@@ -1,4 +1,5 @@
 # Changelog
+
 ## [0.00.024] Compose Stack Separation
 - **Change Type:** Standard Change
 - **Reason:** Combined Docker orchestration blurred the intended boundary between frontend and middleware services, complicating targeted deployments and violating the component separation blueprint.
