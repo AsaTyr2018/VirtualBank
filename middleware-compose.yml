@@ -19,9 +19,10 @@ services:
     build:
       context: ./app/frontend
     ports:
-      - "5173:5173"
+      - "${MIDDLEWARE_FRONTEND_WEB_PORT:-5174}:5173"
     environment:
       NODE_ENV: production
+    command: npm run preview -- --host 0.0.0.0 --port 5173
     depends_on:
       - middleware-core
     restart: unless-stopped

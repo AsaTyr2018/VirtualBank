@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.00.026] Compose Port Isolation
+- **Change Type:** Standard Change
+- **Reason:** Running multiple stacks concurrently caused Docker to compete for port `5173`, blocking the middleware stack when the standalone frontend was already bound to the host.
+- **What Changed:** Gave the middleware stack a dedicated `MIDDLEWARE_FRONTEND_WEB_PORT` host binding (default `5174`), kept the standalone frontend on a configurable `FRONTEND_WEB_PORT`, exposed `FRONTEND_DEV_PORT` overrides in the Vite config, and refreshed the README with the new port guidance.
 ## [0.00.025] Frontend Port Override
 - **Change Type:** Standard Change
 - **Reason:** Local development environments frequently already use port `5173`, preventing the frontend Docker stack from starting.
