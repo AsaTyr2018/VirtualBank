@@ -1,5 +1,10 @@
 # Changelog
 
+## [2025-10-02] Data Store Architecture Blueprint
+- **Change Type:** Normal Change
+- **Reason:** Define a resilient storage backbone so engineering teams can build VirtualBank features atop a trustworthy data platform.
+- **What Changed:** Authored the comprehensive data store architecture document detailing database, cache, and event integrations; removed the placeholder file; refreshed the README to highlight the new resource.
+
 ## [2025-09-25] VirtualBank Design Documentation
 - **Change Type:** Standard Change
 - **Reason:** Establish a cohesive blueprint and updated documentation to guide upcoming development of the VirtualBank experience.
