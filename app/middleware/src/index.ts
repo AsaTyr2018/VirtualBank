@@ -1,0 +1,50 @@
+import Fastify from 'fastify';
+import sensible from '@fastify/sensible';
+import helmet from '@fastify/helmet';
+import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import { config } from './config/index.js';
+import { idempotencyPlugin } from './plugins/idempotency.js';
+import { decoratorPlugin } from './plugins/decorators.js';
+import { healthRoutes } from './routes/health.js';
+import { transferRoutes } from './routes/transfers.js';
+
+async function buildServer() {
+  const app = Fastify({
+    logger: {
+      level: config.env === 'development' ? 'debug' : 'info',
+      transport: config.env === 'development' ? { target: 'pino-pretty' } : undefined
+    }
+  }).withTypeProvider<TypeBoxTypeProvider>();
+
+  await app.register(sensible);
+  await app.register(helmet);
+  await app.register(cors, { origin: true });
+  await app.register(rateLimit, {
+    max: config.rateLimit.max,
+    timeWindow: config.rateLimit.timeWindow
+  });
+  await app.register(decoratorPlugin);
+  await app.register(idempotencyPlugin, { ttlSeconds: config.idempotency.ttlSeconds });
+
+  await app.register(healthRoutes);
+  await app.register(transferRoutes);
+
+  return app;
+}
+
+async function start() {
+  const app = await buildServer();
+  try {
+    await app.listen({
+      host: config.host,
+      port: config.port
+    });
+  } catch (error) {
+    app.log.error(error, 'Failed to start middleware server');
+    process.exit(1);
+  }
+}
+
+void start();

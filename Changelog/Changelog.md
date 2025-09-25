@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.00.015] Middleware Core Service Bootstrap
+- **Change Type:** Normal Change
+- **Reason:** Begin implementing the middleware gateway so the documented transaction flow has an executable foundation for future ledger and stock market integrations.
+- **What Changed:** Introduced the `app/middleware` Fastify server with idempotent transfer intake, health checks, TypeScript toolchain, Docker image, and a dedicated compose stack; refreshed the README with runtime guidance; and recorded the update here.
+
 ## [0.00.014] Changelog Versioning Alignment
 - **Change Type:** Standard Change
 - **Reason:** Replace misleading future-dated entries with version numbers that reflect the ongoing design phase.
@@ -13,7 +18,7 @@
 ## [0.00.012] uxAdmin Command Center Preview
 - **Change Type:** Normal Change
 - **Reason:** Provide a tangible HTML preview so stakeholders can experience the proposed administrator control center flow.
-- **What Changed:** Added an interactive `index.html` prototype under `design/Frontend/uxAdmin-control-center/`, refreshed the README to highlight the new preview, and logged the update here.
+- **What Changed:** Added an interactive `index.html` prototype under `design/Frontend/uxAdmin-control-center/`, refreshed the README to highlight the new preview, and documented the update here.
 
 ## [0.00.011] uxAdmin Command Center Concept
 - **Change Type:** Normal Change

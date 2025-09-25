@@ -1,0 +1,17 @@
+name: middleware-stack
+
+services:
+  middleware-core:
+    build:
+      context: ./app/middleware
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: development
+      MIDDLEWARE_HOST: 0.0.0.0
+      MIDDLEWARE_PORT: 8080
+      RATE_LIMIT_MAX: 200
+      RATE_LIMIT_TIME_WINDOW: 1 minute
+      IDEMPOTENCY_TTL_SECONDS: 600
+      PUBLIC_BASE_URL: http://localhost:8080
+    restart: unless-stopped
