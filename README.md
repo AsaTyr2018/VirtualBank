@@ -59,6 +59,7 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 
 ### Troubleshooting
 - **Frontend port already in use:** Use `FRONTEND_DEV_PORT` (for `npm run dev`), `FRONTEND_PREVIEW_PORT` (for `npm run preview`), `FRONTEND_WEB_PORT` (for the standalone Compose stack), or `MIDDLEWARE_FRONTEND_WEB_PORT` (for the middleware stack) to remap the host port when `5173/5174` are occupied.
+- **Middleware container fails with a Fastify plugin mismatch:** Ensure dependencies are installed from the repository lockfile (`cd app/middleware && npm install`) so `@fastify/helmet` stays on the Fastify 4-compatible release line used by the Docker image.
 - **Stockmarket port already in use:** Set `STOCKMARKET_WEB_PORT` before running `docker compose -f stockmarket-compose.yml up --build` to relocate the simulator from `8100` to an available host port.
 
 ## Data Store Stack
