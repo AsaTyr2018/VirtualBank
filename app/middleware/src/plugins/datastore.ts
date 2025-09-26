@@ -38,13 +38,36 @@ export const datastorePlugin = fp(async (app: FastifyInstance) => {
     app.log.error(error, 'Unexpected PostgreSQL client error detected');
   });
 
-  try {
-    const client = await pool.connect();
-    client.release();
-    app.log.info('Connected to PostgreSQL datastore.');
-  } catch (error) {
-    app.log.error(error, 'Failed to connect to PostgreSQL datastore');
-    throw error;
+  const maxAttempts = Math.max(1, datastore.retry?.maxAttempts ?? 1);
+  const retryDelayMs = Math.max(0, datastore.retry?.delayMs ?? 0);
+
+  let connected = false;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const client = await pool.connect();
+      client.release();
+      app.log.info({ attempt }, 'Connected to PostgreSQL datastore.');
+      connected = true;
+      break;
+    } catch (error) {
+      if (attempt >= maxAttempts) {
+        app.log.error(error, 'Failed to connect to PostgreSQL datastore');
+        throw error;
+      }
+
+      app.log.warn(
+        { attempt, maxAttempts, retryDelayMs, error },
+        'PostgreSQL datastore connection failed, retrying'
+      );
+
+      if (retryDelayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+      }
+    }
+  }
+
+  if (!connected) {
+    throw new Error('Failed to establish PostgreSQL connection after retries');
   }
 
   const datastoreApi: Datastore = {

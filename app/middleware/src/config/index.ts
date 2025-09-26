@@ -102,6 +102,10 @@ export const config = {
       max: Number(env.DATASTORE_POOL_MAX ?? '10'),
       idleTimeoutMs: Number(env.DATASTORE_POOL_IDLE_MS ?? '10000'),
       connectionTimeoutMs: Number(env.DATASTORE_POOL_CONNECTION_TIMEOUT_MS ?? '5000')
+    },
+    retry: {
+      maxAttempts: Number(env.DATASTORE_CONNECT_MAX_RETRIES ?? '5'),
+      delayMs: Number(env.DATASTORE_CONNECT_RETRY_DELAY_MS ?? '2000')
     }
   },
   events: {
