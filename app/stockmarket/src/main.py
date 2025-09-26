@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import asyncio
 import os
-from pathlib import Path
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncGenerator
 
+import httpx
 from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from .engine import StockMarketEngine
+from .analytics import ClickHouseAnalyticsPipeline
+from .engine import StockMarketEngine, RiskRejection
+from .risk import RiskEngine
+from .storage import StockmarketStorage
 from .schemas import (
     HealthStatus,
     MarketNewsItem,
@@ -32,6 +36,9 @@ app.add_middleware(
 )
 
 _engine: StockMarketEngine | None = None
+_storage: StockmarketStorage | None = None
+_analytics: ClickHouseAnalyticsPipeline | None = None
+_http_client: httpx.AsyncClient | None = None
 
 
 TICK_INTERVAL = float(os.environ.get("STOCKMARKET_TICK_INTERVAL", "1.0"))
@@ -51,23 +58,56 @@ async def get_engine() -> StockMarketEngine:
 
 @app.on_event("startup")
 async def _startup() -> None:
-    global _engine
+    global _engine, _storage, _analytics, _http_client
     data = dataset_path()
     if not data.exists():
         raise RuntimeError(f"Dataset not found at {data}")
-    engine = StockMarketEngine.from_dataset(
+    postgres_dsn = os.environ.get("STOCKMARKET_POSTGRES_DSN")
+    redis_url = os.environ.get("STOCKMARKET_REDIS_URL")
+    storage = StockmarketStorage(postgres_dsn, redis_url)
+    await storage.connect()
+    analytics = ClickHouseAnalyticsPipeline(
+        host=os.environ.get("STOCKMARKET_CLICKHOUSE_HOST"),
+        port=int(os.environ.get("STOCKMARKET_CLICKHOUSE_PORT", "8123")),
+        username=os.environ.get("STOCKMARKET_CLICKHOUSE_USER"),
+        password=os.environ.get("STOCKMARKET_CLICKHOUSE_PASSWORD"),
+        database=os.environ.get("STOCKMARKET_CLICKHOUSE_DATABASE", "default"),
+        enabled=os.environ.get("STOCKMARKET_ANALYTICS_ENABLED", "true").lower() != "false",
+    )
+    await analytics.connect()
+    _http_client = httpx.AsyncClient(
+        timeout=float(os.environ.get("STOCKMARKET_HTTP_TIMEOUT", "5"))
+    )
+    risk_engine = RiskEngine(os.environ.get("STOCKMARKET_MIDDLEWARE_BASE_URL"), _http_client)
+    engine = await StockMarketEngine.bootstrap(
         data,
+        storage=storage,
+        risk=risk_engine,
+        analytics=analytics,
         tick_interval=TICK_INTERVAL,
         news_interval=NEWS_INTERVAL,
     )
     await engine.start()
+    _storage = storage
+    _analytics = analytics
     _engine = engine
 
 
 @app.on_event("shutdown")
 async def _shutdown() -> None:
+    global _engine, _storage, _analytics, _http_client
     if _engine is not None:
         await _engine.stop()
+        _engine = None
+    if _analytics is not None:
+        await _analytics.close()
+        _analytics = None
+    if _storage is not None:
+        await _storage.close()
+        _storage = None
+    if _http_client is not None:
+        await _http_client.aclose()
+        _http_client = None
 
 
 @app.get("/health/live", response_model=HealthStatus)
@@ -103,6 +143,8 @@ async def place_order(
 ) -> OrderResponse:
     try:
         return await engine.place_order(request)
+    except RiskRejection as exc:
+        raise HTTPException(status_code=409, detail=exc.message) from exc
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
