@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.043] Middleware Datastore Connection Retry
+- **Change Type:** Emergency Change
+- **Reason:** Maintenance installs reported middleware live probe failures because the service exited after the first PostgreSQL handshake attempt while the database was still warming up.
+- **What Changed:** Added configurable datastore connection retries with `DATASTORE_CONNECT_MAX_RETRIES`/`DATASTORE_CONNECT_RETRY_DELAY_MS`, taught the middleware plugin to loop until PostgreSQL is reachable, and refreshed the README startup guardrails.
+
 # [0.00.042] Maintenance Timeout Diagnostics
 - **Change Type:** Emergency Change
 - **Reason:** Maintenance runs stalled while waiting for containers that exited early, leaving operators without immediate insight into why the boot sequence failed.
