@@ -4,6 +4,9 @@
 
 BEGIN;
 
+-- Avoid blocking on synchronous replicas that have not caught up yet.
+SET LOCAL synchronous_commit TO LOCAL;
+
 CREATE TABLE IF NOT EXISTS market_companies (
   ticker TEXT PRIMARY KEY,
   name TEXT NOT NULL,
