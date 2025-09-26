@@ -10,7 +10,7 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
    - Middleware only: `docker compose -f middleware-compose.yml up --build` (publishes the API at `http://localhost:8080` and the bundled preview UI at `http://localhost:5174`; remap the UI port with `MIDDLEWARE_FRONTEND_WEB_PORT=5318 docker compose -f middleware-compose.yml up --build`).
    - Frontend only: `docker compose -f frontend-compose.yml up --build` (serves `http://localhost:5173` by default; override the host port with `FRONTEND_WEB_PORT=5317 docker compose -f frontend-compose.yml up --build` when another service already occupies `5173`).
    - Stockmarket simulator: `docker compose -f stockmarket-compose.yml up --build` (starts the synthetic market engine at `http://localhost:8100`, sharing the `virtualbank-backplane` network with middleware and wiring the dataset volume automatically; override the host port with `STOCKMARKET_WEB_PORT=58100 docker compose -f stockmarket-compose.yml up --build`).
-5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
+5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy and temporarily downgrades synchronous commit so the seed finishes even if the replica is still starting.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
 ## Automated Maintenance
@@ -25,7 +25,7 @@ The `scripts/maintenance.sh` helper orchestrates installation and lifecycle task
 
 Example usage: `sudo ./scripts/maintenance.sh install`.
 
-Both `install` and `update` wait for the PostgreSQL primary to become ready, seed the `market_companies` table, and ensure the stockmarket simulator is reachable for middleware bridging before reporting success.
+Both `install` and `update` wait for the PostgreSQL primary to become ready, seed the `market_companies` table, and ensure the stockmarket simulator is reachable for middleware bridging before reporting success. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
