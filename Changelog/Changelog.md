@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.00.031] Middleware Fastify 5 Upgrade
+- **Change Type:** Emergency Change
+- **Reason:** The middleware container crashed because `@fastify/rate-limit` now requires Fastify v5 while the service was still pinned to v4, leaving the stack unable to boot.
+- **What Changed:** Upgraded Fastify to v5 with matching plugin releases, regenerated the npm lockfile, refreshed README guidance to reference the Fastify 5 toolchain, and validated the TypeScript build.
+
 ## [0.00.030] Middleware Helmet Downgrade
 - **Change Type:** Emergency Change
 - **Reason:** The middleware Docker container failed at runtime because `@fastify/helmet` v12 demands Fastify v5 while the stack still ships Fastify v4, halting the service during startup.

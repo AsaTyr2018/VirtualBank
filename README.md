@@ -29,7 +29,7 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
-- **Secure middleware gateway** powered by Fastify, JSON Schema validation, and idempotent transaction intake.
+- **Secure middleware gateway** powered by Fastify 5, JSON Schema validation, and idempotent transaction intake.
 - **Modular architecture** spanning the frontend, middleware orchestration, stock market simulation, and resilient data stores.
 - **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
 - **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
@@ -59,7 +59,7 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 
 ### Troubleshooting
 - **Frontend port already in use:** Use `FRONTEND_DEV_PORT` (for `npm run dev`), `FRONTEND_PREVIEW_PORT` (for `npm run preview`), `FRONTEND_WEB_PORT` (for the standalone Compose stack), or `MIDDLEWARE_FRONTEND_WEB_PORT` (for the middleware stack) to remap the host port when `5173/5174` are occupied.
-- **Middleware container fails with a Fastify plugin mismatch:** Ensure dependencies are installed from the repository lockfile (`cd app/middleware && npm install`) so `@fastify/helmet` stays on the Fastify 4-compatible release line used by the Docker image.
+- **Middleware container fails with a Fastify version mismatch:** Remove stale installs (`rm -rf node_modules package-lock.json` inside `app/middleware`) and reinstall with `npm install` to pick up the Fastify 5 core and companion plugins expected by the published Docker image.
 - **Stockmarket port already in use:** Set `STOCKMARKET_WEB_PORT` before running `docker compose -f stockmarket-compose.yml up --build` to relocate the simulator from `8100` to an available host port.
 
 ## Data Store Stack
