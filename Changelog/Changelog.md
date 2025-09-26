@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.045] Middleware Plugin Timeout Extension
+- **Change Type:** Emergency Change
+- **Reason:** Middleware restarts continued because Fastify aborted the datastore plugin while it was still creating indexes on large datasets, preventing the API from ever exposing its health probes.
+- **What Changed:** Raised the default `MIDDLEWARE_PLUGIN_TIMEOUT_MS` window to five minutes so schema preparation can finish, added a startup log announcing when schema checks begin, and refreshed the README with the new default and tuning guidance.
+
 # [0.00.044] Automated Host Detection For Connectivity Bundles
 - **Change Type:** Emergency Change
 - **Reason:** Maintenance-driven installs still yielded frontends that attempted to reach the middleware on unreachable origins, forcing operators to hand-edit environment files after every rollout.
