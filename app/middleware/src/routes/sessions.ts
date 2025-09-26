@@ -52,5 +52,5 @@ export async function sessionRoutes(app: FastifyInstance) {
     });
   };
 
-  app.get('/api/v1/sessions/stream', { websocket: true }, handler);
+  app.get('/api/v1/sessions/stream', { websocket: true, config: { requiredRoles: ['sessions:stream:subscribe'] } }, handler);
 }

@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import type { FastifyInstance } from 'fastify';
+import { createTransferWorkflow, getTransferStatus } from '../services/transfers.js';
 
 const TransferRequest = Type.Object({
   sourceAccountId: Type.String({ minLength: 1 }),
@@ -35,6 +36,9 @@ export async function transferRoutes(app: FastifyInstance) {
   app.post<{ Body: TransferRequestType }>(
     '/api/v1/transfers',
     {
+      config: {
+        requiredRoles: ['bank:transfers:write']
+      },
       schema: {
         body: TransferRequest,
         response: {
@@ -58,6 +62,15 @@ export async function transferRoutes(app: FastifyInstance) {
         correlationId: request.id
       });
 
+      await createTransferWorkflow(app.datastore, {
+        transferId,
+        sourceAccountId: body.sourceAccountId,
+        destinationAccountId: body.destinationAccountId,
+        amount: body.amount,
+        currency: body.currency,
+        note: body.note
+      });
+
       return reply
         .code(202)
         .send({
@@ -71,6 +84,9 @@ export async function transferRoutes(app: FastifyInstance) {
   app.get<{ Params: TransferParams }>(
     '/api/v1/transfers/:id',
     {
+      config: {
+        requiredRoles: ['bank:transfers:read']
+      },
       schema: {
         params: Type.Object({ id: Type.String() }),
         response: {
@@ -79,15 +95,13 @@ export async function transferRoutes(app: FastifyInstance) {
       }
     },
     async (request) => {
-      const now = new Date().toISOString();
-      return {
-        transferId: request.params.id,
-        status: 'pending',
-        steps: [
-          { name: 'reserve_funds', status: 'succeeded', occurredAt: now },
-          { name: 'commit_transfer', status: 'pending', occurredAt: now }
-        ]
-      };
+      const transfer = await getTransferStatus(app.datastore, request.params.id);
+
+      if (!transfer) {
+        throw app.httpErrors.notFound('Transfer not found');
+      }
+
+      return transfer;
     }
   );
 }

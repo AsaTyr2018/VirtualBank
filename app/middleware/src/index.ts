@@ -6,9 +6,11 @@ import rateLimit from '@fastify/rate-limit';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import websocket from '@fastify/websocket';
 import { config } from './config/index.js';
-import { idempotencyPlugin } from './plugins/idempotency.js';
 import { decoratorPlugin } from './plugins/decorators.js';
 import { datastorePlugin } from './plugins/datastore.js';
+import { observabilityPlugin } from './plugins/observability.js';
+import { authenticationPlugin } from './plugins/authentication.js';
+import { idempotencyPlugin } from './plugins/idempotency.js';
 import { healthRoutes } from './routes/health.js';
 import { transferRoutes } from './routes/transfers.js';
 import { creditRoutes } from './routes/credits.js';
@@ -32,8 +34,10 @@ async function buildServer() {
   });
   await app.register(websocket);
   await app.register(decoratorPlugin);
-  await app.register(idempotencyPlugin, { ttlSeconds: config.idempotency.ttlSeconds });
   await app.register(datastorePlugin);
+  await app.register(observabilityPlugin);
+  await app.register(authenticationPlugin);
+  await app.register(idempotencyPlugin, { ttlSeconds: config.idempotency.ttlSeconds });
 
   await app.register(healthRoutes);
   await app.register(transferRoutes);

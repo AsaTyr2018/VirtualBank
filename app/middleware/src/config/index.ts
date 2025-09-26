@@ -2,6 +2,72 @@ import { parseEnv } from './env.js';
 
 const env = parseEnv(process.env);
 
+type ApiKeyConfig = {
+  id: string;
+  secret: string;
+  roles: string[];
+};
+
+function parseApiKeys(rawValue: string | undefined): ApiKeyConfig[] {
+  if (!rawValue || rawValue.trim().length === 0) {
+    return [
+      {
+        id: 'sandbox-service',
+        secret: 'sandbox-secret',
+        roles: [
+          'bank:transfers:read',
+          'bank:transfers:write',
+          'bank:credits:write',
+          'market:orders:write',
+          'sessions:stream:subscribe',
+          'system:metrics:read'
+        ]
+      }
+    ];
+  }
+
+  const entries = rawValue.split(',');
+
+  const parsed: ApiKeyConfig[] = [];
+
+  for (const entry of entries) {
+    const trimmed = entry.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+
+    const [id, secret, rolesPart] = trimmed.split(':');
+    if (!id || !secret) {
+      continue;
+    }
+
+    const roles = rolesPart ? rolesPart.split('|').map((role) => role.trim()).filter(Boolean) : [];
+
+    parsed.push({
+      id,
+      secret,
+      roles
+    });
+  }
+
+  return parsed.length > 0
+    ? parsed
+    : [
+        {
+          id: 'sandbox-service',
+          secret: 'sandbox-secret',
+          roles: [
+            'bank:transfers:read',
+            'bank:transfers:write',
+            'bank:credits:write',
+            'market:orders:write',
+            'sessions:stream:subscribe',
+            'system:metrics:read'
+          ]
+        }
+      ];
+}
+
 export const config = {
   env: env.NODE_ENV ?? 'development',
   host: env.MIDDLEWARE_HOST ?? '0.0.0.0',
@@ -18,6 +84,11 @@ export const config = {
   sessionStream: {
     heartbeatSeconds: Number(env.SESSION_STREAM_HEARTBEAT_SECONDS ?? '30')
   },
+  auth: {
+    apiKeyHeader: env.AUTH_API_KEY_HEADER ?? 'x-api-key',
+    sessionHeader: env.AUTH_SESSION_HEADER ?? 'x-session-id',
+    apiKeys: parseApiKeys(env.AUTH_API_KEYS)
+  },
   datastore: {
     connectionString: env.DATASTORE_URL,
     host: env.DATASTORE_HOST ?? 'localhost',
@@ -30,6 +101,14 @@ export const config = {
       max: Number(env.DATASTORE_POOL_MAX ?? '10'),
       idleTimeoutMs: Number(env.DATASTORE_POOL_IDLE_MS ?? '10000'),
       connectionTimeoutMs: Number(env.DATASTORE_POOL_CONNECTION_TIMEOUT_MS ?? '5000')
+    }
+  },
+  observability: {
+    metrics: {
+      enabled: true
+    },
+    tracing: {
+      enabled: true
     }
   }
 } as const;

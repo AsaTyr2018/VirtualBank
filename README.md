@@ -30,7 +30,8 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
-- **Secure middleware gateway** powered by Fastify 5, JSON Schema validation, and idempotent transaction intake.
+- **Secure middleware gateway** powered by Fastify 5, PostgreSQL-backed idempotency, API key + session guardrails, JSON Schema validation, and structured request logging.
+- **Operational telemetry** with Prometheus metrics, request tracing, and centralized error handling for rapid incident response.
 - **Modular architecture** spanning the frontend, middleware orchestration, stock market simulation, and resilient data stores.
 - **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
 - **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
@@ -110,7 +111,9 @@ Run the stack with `docker compose -f stockmarket-compose.yml up --build` after 
   - Credit line intake at `/api/v1/credits/applications` for Game Master scoring workflows.
   - Market order intake at `/api/v1/market/orders` with limit-order validation.
 - **Streaming:** WebSocket stream at `/api/v1/sessions/stream` that emits ready, heartbeat, and demo portfolio updates so the frontend can wire real-time dashboards.
-- **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging hooks for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
+- **Operational guarantees:** Built-in rate limiting, PostgreSQL-backed idempotency storage, transactional persistence for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
+- **Authentication & RBAC:** Supply API keys via `AUTH_API_KEYS` (`service-id:secret:role1|role2`), customize the key header with `AUTH_API_KEY_HEADER`, require session identifiers through `AUTH_SESSION_HEADER`, and send the `x-session-id` header with every privileged call.
+- **Observability:** Structured logging, trace-aware request IDs, and Prometheus metrics at `/internal/metrics` (protected by the `system:metrics:read` role) keep operations transparent.
 - **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. The Compose stack now pins the defaults to `postgres-primary` on the shared `virtualbank-datastore` network so the container binds immediately after the datastore stack comes online. When running the middleware outside Docker, point it at `localhost:15432` (or override the compose ports) to reach the primary database, or provide a `DATASTORE_URL` connection string when using managed instances.
 - **Stockmarket bridge:** The middleware discovers the simulator through `STOCKMARKET_BASE_URL` (defaults to `http://vb-stockmarket:8100` inside Docker via the shared `virtualbank-backplane` network) so order APIs and WebSocket fan-out can reach the synthetic market without manual host overrides.
 - **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.

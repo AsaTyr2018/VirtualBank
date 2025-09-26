@@ -1,6 +1,8 @@
 import 'fastify';
+import type { Registry, Histogram, Counter } from 'prom-client';
 import type { config } from '../config/index.js';
 import type { Datastore } from '../plugins/datastore.js';
+import type { AuthenticatedUser } from '../plugins/authentication.js';
 
 type ConfigShape = typeof config;
 
@@ -8,6 +10,14 @@ declare module 'fastify' {
   interface FastifyInstance {
     config: ConfigShape;
     datastore: Datastore;
+    auth: {
+      getPrincipal(secret: string): { id: string; roles: string[] } | undefined;
+    };
+    metrics: {
+      registry: Registry;
+      httpRequestDuration: Histogram<string>;
+      httpRequestErrors: Counter<string>;
+    };
     utils: {
       generateTransferId: (sourceAccountId: string, destinationAccountId: string) => string;
       generateCreditApplicationId: (playerId: string, accountId: string) => string;
@@ -44,5 +54,17 @@ declare module 'fastify' {
         correlationId: string;
       }) => Promise<void> | void;
     };
+  }
+
+  interface FastifyRequest {
+    user: AuthenticatedUser | null;
+    session: { id: string } | null;
+    telemetry: { traceId: string; startedAt: bigint } | null;
+    authorize(requiredRoles?: string[]): void;
+  }
+
+  interface FastifyContextConfig {
+    public?: boolean;
+    requiredRoles?: string[];
   }
 }

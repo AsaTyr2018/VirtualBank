@@ -8,10 +8,10 @@ This roadmap translates the documentation gaps into actionable workstreams so co
 - **Incremental integration:** Expand the middleware outward—first to the datastore, then the stockmarket, and finally to external channels.
 
 ## Phase 1 – Middleware Foundations
-1. **Durable idempotency store** – Back idempotency keys with PostgreSQL or Redis and add replay protection hooks.
-2. **Datastore-backed workflows** – Replace the stub transfer/credit/order handlers with transactions and sagas that persist domain records.
-3. **Authentication shell** – Introduce session validation, API keys, and RBAC scaffolding ahead of full IAM integration.
-4. **Observability baseline** – Instrument structured logs, metrics, and traces, plus hardened error handling for each route.
+- [x] **Durable idempotency store** – Idempotency keys now persist in PostgreSQL with checksum validation, replay detection, and TTL-driven cleanup for consistent request deduplication.
+- [x] **Datastore-backed workflows** – Transfer, credit, and market order endpoints execute transactional workflows that create domain records, status steps, and ledger scaffolding inside the datastore.
+- [x] **Authentication shell** – Configurable API keys, session header validation, and role-based authorization guard every non-public route and streaming endpoint.
+- [x] **Observability baseline** – Structured request logs, Prometheus metrics at `/internal/metrics`, and centralized error handling provide actionable telemetry for middleware operations.
 
 ## Phase 2 – Data & Integration Layer
 1. **Prisma/SQL schema implementation** – Materialize the documented schema and generate typed accessors.
