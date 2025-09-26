@@ -125,6 +125,7 @@ The `stockmarket-compose.yml` stack provides the executable market sandbox refer
 - **Networks:** Joins `virtualbank-backplane` (shared with middleware) and `virtualbank-datastore` so future datastore integrations do not require manual wiring.
 - **Configuration:** Tune tick cadence (`STOCKMARKET_TICK_INTERVAL`), news frequency (`STOCKMARKET_NEWS_INTERVAL`), dataset path, and host port (`STOCKMARKET_WEB_PORT`) purely through environment variables.
 - **Internals:** Pricing, matching, risk, and analytics services run as dedicated modules. Orders, portfolios, and tick snapshots persist to PostgreSQL/Redis while middleware-facing risk loops gate order intake and feed ClickHouse analytics.
+- **Startup recovery:** During boot the storage layer now backfills the historic `market_orders.user_id` column when it is missing so older PostgreSQL volumes remain compatible without manual SQL patches.
 
 | Service | Host Port | Notes |
 | --- | --- | --- |

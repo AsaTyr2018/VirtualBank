@@ -325,6 +325,25 @@ class StockmarketStorage:
         )
         await conn.execute(
             """
+            ALTER TABLE market_orders
+            ADD COLUMN IF NOT EXISTS user_id TEXT
+            """
+        )
+        await conn.execute(
+            """
+            UPDATE market_orders
+            SET user_id = 'legacy-user'
+            WHERE user_id IS NULL
+            """
+        )
+        await conn.execute(
+            """
+            ALTER TABLE market_orders
+            ALTER COLUMN user_id SET NOT NULL
+            """
+        )
+        await conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS market_trades (
                 order_id TEXT NOT NULL,
                 counter_order_id TEXT,
