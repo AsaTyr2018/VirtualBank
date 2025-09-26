@@ -4,6 +4,7 @@ set -euo pipefail
 REPO_URL="https://github.com/AsaTyr2018/VirtualBank"
 INSTALL_DIR="/opt/VirtualBank"
 COMPOSE_FILE="middleware-compose.yml"
+STOCKMARKET_COMPOSE="stockmarket-compose.yml"
 DATASTORE_COMPOSE="apps/datastore/datastore-compose.yml"
 POSTGRES_PRIMARY_CONTAINER="vb-postgres-primary"
 POSTGRES_DATABASE="virtualbank"
@@ -151,13 +152,7 @@ rebuild_stack() {
   local compose_cmd
   compose_cmd="$(ensure_docker_compose)"
   ensure_docker_running
-  if [[ -f "${INSTALL_DIR}/${COMPOSE_FILE}" ]]; then
-    log "Updating middleware stack using ${compose_cmd}."
-    (cd "$INSTALL_DIR" && $compose_cmd -f "$COMPOSE_FILE" pull)
-    (cd "$INSTALL_DIR" && $compose_cmd -f "$COMPOSE_FILE" up -d --build)
-  else
-    log "Middleware compose file not found; skipping middleware deployment."
-  fi
+
   if [[ -f "${INSTALL_DIR}/${DATASTORE_COMPOSE}" ]]; then
     log "Ensuring datastore stack is prepared using ${compose_cmd}."
     (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" pull)
@@ -165,6 +160,22 @@ rebuild_stack() {
     seed_fake_companies
   else
     log "Datastore compose file not found; skipping datastore deployment."
+  fi
+
+  if [[ -f "${INSTALL_DIR}/${STOCKMARKET_COMPOSE}" ]]; then
+    log "Ensuring stockmarket stack is prepared using ${compose_cmd}."
+    (cd "$INSTALL_DIR" && $compose_cmd -f "$STOCKMARKET_COMPOSE" pull)
+    (cd "$INSTALL_DIR" && $compose_cmd -f "$STOCKMARKET_COMPOSE" up -d --build)
+  else
+    log "Stockmarket compose file not found; skipping stockmarket deployment."
+  fi
+
+  if [[ -f "${INSTALL_DIR}/${COMPOSE_FILE}" ]]; then
+    log "Updating middleware stack using ${compose_cmd}."
+    (cd "$INSTALL_DIR" && $compose_cmd -f "$COMPOSE_FILE" pull)
+    (cd "$INSTALL_DIR" && $compose_cmd -f "$COMPOSE_FILE" up -d --build)
+  else
+    log "Middleware compose file not found; skipping middleware deployment."
   fi
 }
 
@@ -283,6 +294,10 @@ uninstall_virtualbank() {
       if [[ -f "${INSTALL_DIR}/${COMPOSE_FILE}" ]]; then
         log "Stopping middleware stack."
         (cd "$INSTALL_DIR" && $compose_cmd -f "$COMPOSE_FILE" down --remove-orphans)
+      fi
+      if [[ -f "${INSTALL_DIR}/${STOCKMARKET_COMPOSE}" ]]; then
+        log "Stopping stockmarket stack."
+        (cd "$INSTALL_DIR" && $compose_cmd -f "$STOCKMARKET_COMPOSE" down --remove-orphans)
       fi
       if [[ -f "${INSTALL_DIR}/${DATASTORE_COMPOSE}" ]]; then
         log "Stopping datastore stack."
