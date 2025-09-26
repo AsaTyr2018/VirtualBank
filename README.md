@@ -105,7 +105,7 @@ The `apps/datastore/datastore-compose.yml` stack mirrors the architecture define
 | Kafka broker | `9092` | PLAINTEXT listener for local event streaming. |
 | ClickHouse HTTP | `8123` | Default HTTP endpoint for queries and health checks. |
 | ClickHouse native | `19000` | Non-default host binding for the native protocol to prevent overlap with MinIO. |
-| MinIO API | `9000` | S3-compatible API surface. |
+| MinIO API | `9000` | S3-compatible API surface (health probes require the root credentials). |
 | MinIO console | `9001` | Web console for inspecting buckets and objects. |
 
 Bring the stack online with `docker compose -f apps/datastore/datastore-compose.yml up --build` and connect services using the shared `datastore-net` bridge network. Default credentials are scoped to local development and should be replaced in production-like scenarios.
