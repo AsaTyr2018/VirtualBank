@@ -53,16 +53,23 @@ export async function creditRoutes(app: FastifyInstance) {
         correlationId: request.id
       });
 
-      await submitCreditApplication(app.datastore, {
-        applicationId,
-        playerId: body.playerId,
-        accountId: body.accountId,
-        requestedLimit: body.requestedLimit,
-        currency: body.currency,
-        justification: body.justification,
-        collateralType: body.collateralType,
-        attachments: body.attachments
-      });
+      await submitCreditApplication(
+        { datastore: app.datastore, cache: app.cache, events: app.events },
+        {
+          applicationId,
+          playerId: body.playerId,
+          accountId: body.accountId,
+          requestedLimit: body.requestedLimit,
+          currency: body.currency,
+          justification: body.justification,
+          collateralType: body.collateralType,
+          attachments: body.attachments
+        },
+        {
+          correlationId: request.id,
+          sessionId: request.session?.id
+        }
+      );
 
       return reply.code(202).send({
         applicationId,

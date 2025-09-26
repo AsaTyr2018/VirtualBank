@@ -62,14 +62,21 @@ export async function transferRoutes(app: FastifyInstance) {
         correlationId: request.id
       });
 
-      await createTransferWorkflow(app.datastore, {
-        transferId,
-        sourceAccountId: body.sourceAccountId,
-        destinationAccountId: body.destinationAccountId,
-        amount: body.amount,
-        currency: body.currency,
-        note: body.note
-      });
+      await createTransferWorkflow(
+        { datastore: app.datastore, cache: app.cache, events: app.events },
+        {
+          transferId,
+          sourceAccountId: body.sourceAccountId,
+          destinationAccountId: body.destinationAccountId,
+          amount: body.amount,
+          currency: body.currency,
+          note: body.note
+        },
+        {
+          correlationId: request.id,
+          sessionId: request.session?.id
+        }
+      );
 
       return reply
         .code(202)
@@ -95,7 +102,10 @@ export async function transferRoutes(app: FastifyInstance) {
       }
     },
     async (request) => {
-      const transfer = await getTransferStatus(app.datastore, request.params.id);
+      const transfer = await getTransferStatus(
+        { datastore: app.datastore, cache: app.cache, events: app.events },
+        request.params.id
+      );
 
       if (!transfer) {
         throw app.httpErrors.notFound('Transfer not found');

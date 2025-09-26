@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.035] Middleware Data & Integration Layer
+- **Change Type:** Normal Change
+- **Reason:** Deliver Phase 2 of the roadmap so the middleware has the documented schema, event bridge, caching tier, and stockmarket integration needed for live trading flows.
+- **What Changed:** Added a Prisma schema and typed SQL accessors covering accounts, transfers, ledger entries, credit applications, market orders, and session events; introduced Redis caching helpers and a Kafka event bridge that publish domain envelopes for transfers, credits, market orders, and session lifecycles; formalized REST/WebSocket clients for the stockmarket simulator and wired market workflows through them; refreshed services, routes, and documentation to use the new data layer and marked Phase 2 complete in the roadmap.
+
 # [0.00.034] Middleware Foundation Hardening
 - **Change Type:** Normal Change
 - **Reason:** Complete the roadmap's Phase 1 middleware foundations so that request deduplication, transactional persistence, authentication, and observability align with the documented architecture.

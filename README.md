@@ -35,6 +35,7 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 - **Modular architecture** spanning the frontend, middleware orchestration, stock market simulation, and resilient data stores.
 - **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
 - **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
+- **Data & integration layer** powered by Prisma-aligned SQL schemas, Redis caching, Kafka event streaming, and a hardened stockmarket bridge for real-time trading flows.
 
 ## Roadmap & Next Steps
 Track the active delivery plan in [`docs/roadmap/next-steps.md`](docs/roadmap/next-steps.md). The roadmap focuses on hardening the middleware foundations first, then connecting the datastore and stockmarket services, modernizing the frontend to consume live data, and finally scaling the simulator alongside cross-cutting security and operations initiatives.
@@ -112,10 +113,11 @@ Run the stack with `docker compose -f stockmarket-compose.yml up --build` after 
   - Market order intake at `/api/v1/market/orders` with limit-order validation.
 - **Streaming:** WebSocket stream at `/api/v1/sessions/stream` that emits ready, heartbeat, and demo portfolio updates so the frontend can wire real-time dashboards.
 - **Operational guarantees:** Built-in rate limiting, PostgreSQL-backed idempotency storage, transactional persistence for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
+- **Data access:** Prisma schema (`app/middleware/prisma/schema.prisma`) mirrors the live SQL tables, and typed repository helpers feed account, transfer, credit, and market workflows.
 - **Authentication & RBAC:** Supply API keys via `AUTH_API_KEYS` (`service-id:secret:role1|role2`), customize the key header with `AUTH_API_KEY_HEADER`, require session identifiers through `AUTH_SESSION_HEADER`, and send the `x-session-id` header with every privileged call.
 - **Observability:** Structured logging, trace-aware request IDs, and Prometheus metrics at `/internal/metrics` (protected by the `system:metrics:read` role) keep operations transparent.
-- **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. The Compose stack now pins the defaults to `postgres-primary` on the shared `virtualbank-datastore` network so the container binds immediately after the datastore stack comes online. When running the middleware outside Docker, point it at `localhost:15432` (or override the compose ports) to reach the primary database, or provide a `DATASTORE_URL` connection string when using managed instances.
-- **Stockmarket bridge:** The middleware discovers the simulator through `STOCKMARKET_BASE_URL` (defaults to `http://vb-stockmarket:8100` inside Docker via the shared `virtualbank-backplane` network) so order APIs and WebSocket fan-out can reach the synthetic market without manual host overrides.
+- **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. Configure Kafka brokers and topics with `EVENTS_*`, wire Redis caching through `CACHE_*`, and control the stockmarket client via `STOCKMARKET_BASE_URL`/`STOCKMARKET_WS_URL`. The Compose stack pins sane defaults (PostgreSQL on `postgres-primary`, Kafka on `kafka-broker`, and Redis on `redis-cache`) so local deployments boot instantly, while direct runs can target cloud services via URLs.
+- **Stockmarket bridge:** The middleware discovers the simulator through `STOCKMARKET_BASE_URL` (defaults to `http://vb-stockmarket:8100` inside Docker via the shared `virtualbank-backplane` network) and streams live ticks through the configured WebSocket endpoint, keeping market orders synchronized with exchange acknowledgements.
 - **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.
 
 ## Datasets

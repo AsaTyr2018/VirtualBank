@@ -103,6 +103,33 @@ export const config = {
       connectionTimeoutMs: Number(env.DATASTORE_POOL_CONNECTION_TIMEOUT_MS ?? '5000')
     }
   },
+  events: {
+    enabled: (env.EVENTS_ENABLED ?? 'true').toLowerCase() !== 'false',
+    clientId: env.EVENTS_CLIENT_ID ?? 'virtualbank-middleware',
+    brokers: (env.EVENTS_BROKERS ?? 'localhost:9092')
+      .split(',')
+      .map((broker) => broker.trim())
+      .filter(Boolean),
+    topicPrefix: env.EVENTS_TOPIC_PREFIX ?? 'virtualbank'
+  },
+  cache: {
+    enabled: (env.CACHE_ENABLED ?? 'true').toLowerCase() !== 'false',
+    defaultTtlSeconds: Number(env.CACHE_DEFAULT_TTL_SECONDS ?? '30'),
+    url: env.CACHE_URL,
+    host: env.CACHE_HOST ?? 'localhost',
+    port: Number(env.CACHE_PORT ?? '6379'),
+    password: env.CACHE_PASSWORD,
+    tls: (env.CACHE_TLS ?? 'false').toLowerCase() === 'true'
+  },
+  stockmarket: {
+    baseUrl: env.STOCKMARKET_BASE_URL ?? 'http://vb-stockmarket:8100',
+    wsUrl:
+      env.STOCKMARKET_WS_URL ??
+      (env.STOCKMARKET_BASE_URL
+        ? env.STOCKMARKET_BASE_URL.replace('http', 'ws').replace(/\/?$/, '') + '/ws/ticks'
+        : 'ws://vb-stockmarket:8100/ws/ticks'),
+    requestTimeoutMs: Number(env.STOCKMARKET_TIMEOUT_MS ?? '5000')
+  },
   observability: {
     metrics: {
       enabled: true

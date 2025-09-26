@@ -56,16 +56,28 @@ export async function marketRoutes(app: FastifyInstance) {
         correlationId: request.id
       });
 
-      await recordMarketOrder(app.datastore, {
-        orderId,
-        accountId: body.accountId,
-        symbol: body.symbol,
-        side: body.side,
-        orderType: body.orderType,
-        quantity: body.quantity,
-        limitPrice: body.limitPrice,
-        timeInForce: body.timeInForce
-      });
+      await recordMarketOrder(
+        {
+          datastore: app.datastore,
+          cache: app.cache,
+          events: app.events,
+          stockmarket: app.stockmarket
+        },
+        {
+          orderId,
+          accountId: body.accountId,
+          symbol: body.symbol,
+          side: body.side,
+          orderType: body.orderType,
+          quantity: body.quantity,
+          limitPrice: body.limitPrice,
+          timeInForce: body.timeInForce
+        },
+        {
+          correlationId: request.id,
+          sessionId: request.session?.id
+        }
+      );
 
       return reply.code(202).send({
         orderId,

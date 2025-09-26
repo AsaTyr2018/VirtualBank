@@ -1,0 +1,137 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATASTORE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  accountId        String   @id @map("account_id")
+  playerId         String   @map("player_id")
+  currency         String
+  status           String   @default("active")
+  availableBalance Decimal  @default(0) @map("available_balance")
+  heldBalance      Decimal  @default(0) @map("held_balance")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @map("updated_at")
+
+  sourceTransfers      Transfer[] @relation("source_account")
+  destinationTransfers Transfer[] @relation("destination_account")
+  ledgerEntries        LedgerEntry[]
+  creditApplications   CreditApplication[]
+  marketOrders         MarketOrder[]
+
+  @@index([playerId, currency], name: "idx_accounts_player_currency")
+}
+
+model Transfer {
+  transferId          String         @id @map("transfer_id")
+  sourceAccountId     String         @map("source_account_id")
+  destinationAccountId String        @map("destination_account_id")
+  amount              Decimal
+  currency            String
+  note                String?
+  status              String
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @default(now()) @map("updated_at")
+
+  sourceAccount      Account        @relation("source_account", fields: [sourceAccountId], references: [accountId])
+  destinationAccount Account        @relation("destination_account", fields: [destinationAccountId], references: [accountId])
+  steps              TransferStep[]
+  ledgerEntries      LedgerEntry[]
+
+  @@index([sourceAccountId], name: "idx_transfers_source_account")
+  @@index([destinationAccountId], name: "idx_transfers_destination_account")
+}
+
+model TransferStep {
+  stepId     String   @id @map("step_id")
+  transferId String   @map("transfer_id")
+  sequence   Int
+  name       String
+  status     String
+  occurredAt DateTime @default(now()) @map("occurred_at")
+
+  transfer Transfer @relation(fields: [transferId], references: [transferId])
+
+  @@index([transferId], name: "idx_transfer_steps_transfer_id")
+}
+
+model LedgerEntry {
+  entryId    String   @id @map("entry_id")
+  transferId String?  @map("transfer_id")
+  accountId  String   @map("account_id")
+  direction  String
+  amount     Decimal
+  currency   String
+  occurredAt DateTime @default(now()) @map("occurred_at")
+
+  transfer Transfer? @relation(fields: [transferId], references: [transferId])
+  account  Account   @relation(fields: [accountId], references: [accountId])
+
+  @@index([accountId], name: "idx_ledger_entries_account")
+}
+
+model CreditApplication {
+  applicationId String   @id @map("application_id")
+  playerId      String   @map("player_id")
+  accountId     String   @map("account_id")
+  requestedLimit Decimal @map("requested_limit")
+  currency       String
+  justification  String
+  collateralType String? @map("collateral_type")
+  attachments    Json?
+  status         String
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @map("updated_at")
+
+  account Account @relation(fields: [accountId], references: [accountId])
+}
+
+model MarketOrder {
+  orderId         String   @id @map("order_id")
+  accountId       String   @map("account_id")
+  symbol          String
+  side            String
+  orderType       String   @map("order_type")
+  quantity        Decimal
+  limitPrice      Decimal? @map("limit_price")
+  timeInForce     String?  @map("time_in_force")
+  status          String
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
+  exchangeOrderId String?  @map("exchange_order_id")
+  exchangeStatus  String?  @map("exchange_status")
+  lastExchangeSync DateTime? @map("last_exchange_sync")
+
+  account Account @relation(fields: [accountId], references: [accountId])
+
+  @@index([accountId], name: "idx_market_orders_account")
+}
+
+model TransactionEvent {
+  eventId      String   @id @map("event_id")
+  eventType    String   @map("event_type")
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id")
+  payload      Json
+  status       String
+  retries      Int      @default(0)
+  occurredAt   DateTime @default(now()) @map("occurred_at")
+  publishedAt  DateTime? @map("published_at")
+  error        String?
+
+  @@index([status, occurredAt], name: "idx_transaction_events_status")
+}
+
+model SessionEvent {
+  sessionEventId String   @id @map("session_event_id")
+  sessionId      String   @map("session_id")
+  eventType      String   @map("event_type")
+  payload        Json
+  emittedAt      DateTime @default(now()) @map("emitted_at")
+
+  @@index([sessionId, emittedAt], name: "idx_session_events_session")
+}
