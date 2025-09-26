@@ -1,8 +1,26 @@
+export type IconName =
+  | 'dashboard'
+  | 'sparkles'
+  | 'send'
+  | 'market'
+  | 'shield'
+  | 'settings'
+  | 'bell'
+  | 'arrowRight'
+  | 'flame'
+  | 'trendUp'
+  | 'check'
+  | 'repeat'
+  | 'gift';
+
 interface IconProps {
-  name: string;
+  name: IconName;
+  label?: string;
+  size?: number;
+  className?: string;
 }
 
-const icons: Record<string, string> = {
+const icons: Record<IconName, string> = {
   dashboard:
     'M5 3h6v8H3V5a2 2 0 0 1 2-2zm8 0h6a2 2 0 0 1 2 2v4h-8V3zm0 8h8v6a2 2 0 0 1-2 2h-6v-8zm-2 0v8H5a2 2 0 0 1-2-2v-6h8z',
   sparkles:
@@ -23,11 +41,20 @@ const icons: Record<string, string> = {
   gift: 'M20 8h-2.2a3 3 0 0 0-5.8-1 3 3 0 0 0-5.8 1H4v14h16V8zm-8-3a1 1 0 0 1 1 1H11a1 1 0 0 1 1-1zM9 8H6a1 1 0 0 1 0-2h3v2zm6 0V6h3a1 1 0 0 1 0 2h-3zm-3 4h-2v8H8v-8H6v-2h3V8h2v2h3v2h-2v8h-2v-8z'
 };
 
-export const Icon = ({ name }: IconProps) => {
-  const path = icons[name] ?? icons['dashboard'];
+export const Icon = ({ name, label, size = 20, className }: IconProps) => {
+  const path = icons[name] ?? icons.dashboard;
 
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : 'true'}
+      width={size}
+      height={size}
+      className={className}
+    >
       <path d={path} />
     </svg>
   );

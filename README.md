@@ -41,9 +41,20 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 Track the active delivery plan in [`docs/roadmap/next-steps.md`](docs/roadmap/next-steps.md). The roadmap focuses on hardening the middleware foundations first, then connecting the datastore and stockmarket services, modernizing the frontend to consume live data, and finally scaling the simulator alongside cross-cutting security and operations initiatives.
 
 ## Frontend Experience
-- **Technology stack:** React + TypeScript + Vite with React Query and Zustand managing optimistic data flows.
-- **Feature highlights:** Guided onboarding journey, real-time dashboard metrics, celebratory transfer wizard, market desk heatmaps, and Game Master governance console.
-- **Design language:** Inspired by the [HTML concept previews](docs/design/Frontend/) with soft gradients, accessible typography, and micro-interaction friendly components.
+- **Technology stack:** React + TypeScript + Vite with React Query driving all API-powered stores and Zustand reserved for lightweight onboarding state.
+- **Live data integration:** Dashboards, market views, and the transfer wizard fetch from the middleware at runtime, optimistically update caches, and subscribe to the authenticated session WebSocket for real-time portfolio telemetry.
+- **Design language:** Updated theming tokens (`theme.css`) bring consistent spacing, typography, and focus rings. Reusable components ship with Storybook stories and the accessibility addon for quick audits.
+- **Feature highlights:** Guided onboarding journey, real-time dashboard metrics, celebratory transfer wizard, market desk heatmaps, and Game Master governance console, all driven by live middleware data.
+- **Tooling:** Run `npm run storybook` for the interactive component catalog and `npm run test:accessibility` to execute the Storybook-powered a11y test runner in CI or locally.
+- **Configuration:**
+
+  | Variable | Default | Description |
+  | --- | --- | --- |
+  | `VITE_MIDDLEWARE_BASE_URL` | `http://localhost:8080` | Base URL for REST calls and WebSocket subscriptions. |
+  | `VITE_MIDDLEWARE_API_KEY` | `sandbox-secret` | API key matching the middleware `AUTH_API_KEYS` secret. |
+  | `VITE_MIDDLEWARE_API_KEY_HEADER` | `x-api-key` | Header the frontend uses when authenticating REST calls. |
+  | `VITE_MIDDLEWARE_SESSION_HEADER` | `x-session-id` | Header name carrying the generated client session identifier. |
+
 - **Docker support:** Use the dedicated Compose stack (`docker compose -f frontend-compose.yml up --build`) to build the image and run `vite preview`, making the UI available at `http://localhost:5173` (override with `FRONTEND_WEB_PORT`) without coupling it to other services.
 
 ## Project Structure

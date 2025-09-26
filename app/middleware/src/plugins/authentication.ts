@@ -46,9 +46,23 @@ export const authenticationPlugin = fp(async (fastify: FastifyInstance) => {
       return;
     }
 
-    const apiKey = request.headers[auth.apiKeyHeader] as string | undefined;
+    const isWebsocket = request.headers.upgrade?.toLowerCase() === 'websocket';
+
+    let apiKey = request.headers[auth.apiKeyHeader] as string | undefined;
+    let sessionId = request.headers[auth.sessionHeader] as string | undefined;
+
+    if ((!apiKey || !sessionId) && isWebsocket) {
+      try {
+        const url = new URL(request.url, `http://${request.headers.host ?? 'localhost'}`);
+        apiKey = apiKey ?? url.searchParams.get('apiKey') ?? undefined;
+        sessionId = sessionId ?? url.searchParams.get('sessionId') ?? undefined;
+      } catch (error) {
+        fastify.log.warn({ err: error }, 'Failed to parse WebSocket authentication query parameters');
+      }
+    }
+
     if (!apiKey) {
-      throw fastify.httpErrors.unauthorized('Missing API key header.');
+      throw fastify.httpErrors.unauthorized('Missing API key credential.');
     }
 
     const principal = secrets.get(apiKey);
@@ -56,7 +70,6 @@ export const authenticationPlugin = fp(async (fastify: FastifyInstance) => {
       throw fastify.httpErrors.unauthorized('Invalid API key.');
     }
 
-    const sessionId = request.headers[auth.sessionHeader] as string | undefined;
     if (!sessionId || sessionId.trim().length === 0) {
       throw fastify.httpErrors.unauthorized('Missing session identifier header.');
     }

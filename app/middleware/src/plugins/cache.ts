@@ -113,7 +113,7 @@ export const cachePlugin = fp(async (app: FastifyInstance) => {
     });
   }
 
-  redis.on('error', (error) => {
+  redis.on('error', (error: Error) => {
     app.log.error(error, 'Redis client error');
   });
 

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Icon } from '../ui/Icon';
+import { Icon, type IconName } from '../ui/Icon';
 import '../ui/ui.css';
 
 const navItems = [
@@ -9,7 +9,7 @@ const navItems = [
   { to: '/market', icon: 'market', label: 'Market Desk' },
   { to: '/console', icon: 'shield', label: 'Game Master' },
   { to: '/settings', icon: 'settings', label: 'Settings' }
-];
+] as const satisfies Array<{ to: string; icon: IconName; label: string }>;
 
 export const Sidebar = ({ activePath }: { activePath: string }) => {
   return (

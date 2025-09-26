@@ -16,8 +16,15 @@
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 12px;
+  --spacing-xs: 0.35rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1.25rem;
+  --spacing-lg: 2rem;
+  --font-family-base: 'Inter', 'Segoe UI', sans-serif;
+  --font-family-display: 'Space Grotesk', 'Inter', sans-serif;
+  --line-height-base: 1.6;
+  --focus-ring: 0 0 0 3px rgba(212, 124, 79, 0.35);
   --transition: 220ms ease-in-out;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 * {
@@ -26,10 +33,11 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: var(--font-family-base);
   background: radial-gradient(circle at top left, #f8f3ee 0%, #f1e5d8 35%, #f4efe9 70%, #fdfbf8 100%);
   color: var(--text);
   min-height: 100vh;
+  line-height: var(--line-height-base);
 }
 
 a {
@@ -39,6 +47,15 @@ a {
 
 a:hover {
   color: var(--accent-strong);
+}
+
+:where(button, a, input, textarea, select) {
+  font-family: inherit;
+}
+
+:where(button, a, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 ::-webkit-scrollbar {

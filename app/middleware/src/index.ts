@@ -19,6 +19,7 @@ import { transferRoutes } from './routes/transfers.js';
 import { creditRoutes } from './routes/credits.js';
 import { marketRoutes } from './routes/market.js';
 import { sessionRoutes } from './routes/sessions.js';
+import { experienceRoutes } from './routes/experience.js';
 
 async function buildServer() {
   const app = Fastify({
@@ -50,6 +51,7 @@ async function buildServer() {
   await app.register(creditRoutes);
   await app.register(marketRoutes);
   await app.register(sessionRoutes);
+  await app.register(experienceRoutes);
 
   return app;
 }
