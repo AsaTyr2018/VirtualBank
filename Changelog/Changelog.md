@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.047] MinIO Health Probe Authentication
+- **Change Type:** Emergency Change
+- **Reason:** The datastore maintenance runs and compose health checks reported MinIO as unhealthy because the S3 API blocked unauthenticated requests to the `/minio/health/live` endpoint.
+- **What Changed:** Updated the MinIO health check to authenticate with the configured root credentials so probes succeed and documented the behaviour in the README service table.
+
 # [0.00.046] Datastore Stack Boot Recovery
 - **Change Type:** Emergency Change
 - **Reason:** Maintenance rebuilds stalled because the PostgreSQL replica rejected startup without the legacy `POSTGRESQL_MASTER_*` variables, Kafka refused to format storage with the deprecated cluster ID, and MinIO's health probe fired before the service finished its warm-up cycle.
