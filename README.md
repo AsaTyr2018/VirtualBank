@@ -14,6 +14,10 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy and temporarily downgrades synchronous commit so the seed finishes even if the replica is still starting.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
+## API Connectivity Automation
+
+Run `./scripts/connectivity.sh` from the repository root to provision aligned API credentials for every service. The helper writes `connection.env` for Compose and component-scoped `.env.connection` files, checks the middleware and stockmarket health probes, and exercises an authenticated middleware endpoint to confirm the generated key works. Re-run with `--force` to overwrite existing files or `--deep-check` for a readiness probe, then launch stacks with `docker compose --env-file connection.env -f middleware-compose.yml up --build` to apply the shared configuration.
+
 ## Automated Maintenance
 The `scripts/maintenance.sh` helper orchestrates installation and lifecycle tasks for production-like environments. Execute the script as `root` (or with `sudo`) and pass one of the following commands:
 
