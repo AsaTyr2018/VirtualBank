@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.039] Middleware Plugin Timeout Safeguard
+- **Change Type:** Emergency Change
+- **Reason:** The middleware container exited because the datastore plugin needed longer than Fastify's default 10-second readiness window when large schema migrations were running, triggering repeated boot failures.
+- **What Changed:** Added a configurable `MIDDLEWARE_PLUGIN_TIMEOUT_MS` setting that widens the Fastify plugin timeout, logged successful datastore schema preparation, refreshed the README with the new guidance, and documented the fix here.
+
 # [0.00.038] API Connectivity Automation
 - **Change Type:** Normal Change
 - **Reason:** Provide a turnkey way to generate aligned API credentials and confirm cross-service connectivity so teams can bring up the stack without manual key choreography.

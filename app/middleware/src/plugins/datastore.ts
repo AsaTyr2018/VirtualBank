@@ -62,6 +62,8 @@ export const datastorePlugin = fp(async (app: FastifyInstance) => {
 
   await ensureSchema(datastoreApi);
 
+  app.log.info('PostgreSQL datastore schema ensured.');
+
   app.decorate('datastore', datastoreApi);
 
   app.addHook('onClose', async (instance: FastifyInstance) => {
