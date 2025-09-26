@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.00.030] Middleware Helmet Downgrade
+- **Change Type:** Emergency Change
+- **Reason:** The middleware Docker container failed at runtime because `@fastify/helmet` v12 demands Fastify v5 while the stack still ships Fastify v4, halting the service during startup.
+- **What Changed:** Pinned `@fastify/helmet` to the Fastify v4-compatible v11 line, refreshed the npm lockfile, documented the troubleshooting step in the README, and confirmed the TypeScript build succeeds with the adjusted dependency set.
+
 ## [0.00.029] Fake Company Seed Unblock
 - **Change Type:** Normal Change
 - **Reason:** The maintenance script stalled because PostgreSQL waited for the synchronous replica to acknowledge commits while it was still warming up.
