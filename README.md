@@ -9,6 +9,7 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 4. Prefer Docker Compose for isolated stacks:
    - Middleware only: `docker compose -f middleware-compose.yml up --build` (publishes the API at `http://localhost:8080` and the bundled preview UI at `http://localhost:5174`; remap the UI port with `MIDDLEWARE_FRONTEND_WEB_PORT=5318 docker compose -f middleware-compose.yml up --build`).
    - Frontend only: `docker compose -f frontend-compose.yml up --build` (serves `http://localhost:5173` by default; override the host port with `FRONTEND_WEB_PORT=5317 docker compose -f frontend-compose.yml up --build` when another service already occupies `5173`).
+   - Stockmarket simulator: `docker compose -f stockmarket-compose.yml up --build` (starts the synthetic market engine at `http://localhost:8100`, sharing the `virtualbank-backplane` network with middleware and wiring the dataset volume automatically; override the host port with `STOCKMARKET_WEB_PORT=58100 docker compose -f stockmarket-compose.yml up --build`).
 5. Launch the data store foundation locally with `docker compose -f apps/datastore/datastore-compose.yml up --build` when you want PostgreSQL, Redis, Kafka, ClickHouse, and MinIO services that mirror the reference architecture. Host bindings avoid common developer ports (`15432/15433` for PostgreSQL and `19000` for the ClickHouse native wire) so local installations stay untouched. The maintenance script automatically seeds the `market_companies` table from [`docs/dataset/fake_companies.json`](docs/dataset/fake_companies.json) once PostgreSQL reports healthy.
 6. Explore the design blueprints in [`docs/designing/design.md`](docs/designing/design.md) to understand the planned player journeys and backend integrations.
 
@@ -17,14 +18,14 @@ The `scripts/maintenance.sh` helper orchestrates installation and lifecycle task
 
 | Command | Description |
 | --- | --- |
-| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, and starts the middleware and datastore stacks. |
-| `update` | Pulls the latest commits, rebuilds containers, and reapplies the Docker Compose stacks. |
+| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, and starts the datastore, stockmarket, and middleware stacks with shared networks. |
+| `update` | Pulls the latest commits, rebuilds containers, and reapplies the datastore, stockmarket, and middleware stacks. |
 | `uninstall` | Stops active Compose services, removes related volumes, and deletes `/opt/VirtualBank`. |
 | `check-updates` | Contacts GitHub to determine whether newer commits are available without applying changes. |
 
 Example usage: `sudo ./scripts/maintenance.sh install`.
 
-Both `install` and `update` wait for the PostgreSQL primary to become ready and then seed the `market_companies` table so new deployments instantly expose the fake companies dataset.
+Both `install` and `update` wait for the PostgreSQL primary to become ready, seed the `market_companies` table, and ensure the stockmarket simulator is reachable for middleware bridging before reporting success.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
@@ -43,6 +44,7 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready and 
 - `app/` – Runtime services under active development.
   - [`app/middleware/`](app/middleware/) – Fastify-based middleware core service with TypeScript source, Docker image, and Compose stack.
   - [`app/frontend/`](app/frontend/) – Vite + React experience shell implementing the onboarding, dashboard, transfer wizard, market desk, and Game Master console blueprints.
+  - [`app/stockmarket/`](app/stockmarket/) – Python FastAPI market simulator with real-time pricing, lightweight order matching, and WebSocket broadcasting.
 - `apps/` – Docker Compose stacks grouped by component for local infrastructure bring-up.
   - [`apps/datastore/datastore-compose.yml`](apps/datastore/datastore-compose.yml) – PostgreSQL, Redis, Kafka, ClickHouse, and MinIO sandbox aligned with the data store blueprint.
 - `docs/` – Centralized documentation hub with licenses, datasets, and design workspaces.
@@ -52,10 +54,12 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready and 
  - [`docs/design/Data Stores/data-store-architecture.md`](docs/design/Data%20Stores/data-store-architecture.md) – High-availability storage blueprint detailing database, cache, and event streaming integrations.
 - [`docs/dataset/`](docs/dataset/) – Curated fake companies and portfolio seeds for market-simulation testing.
 - [`middleware-compose.yml`](middleware-compose.yml) – Dedicated Docker Compose stack for the middleware core service.
+- [`stockmarket-compose.yml`](stockmarket-compose.yml) – Synthetic market engine stack that mounts datasets and joins the shared backplane network.
 - [`Changelog/Changelog.md`](Changelog/Changelog.md) – Running log of product and documentation updates.
 
 ### Troubleshooting
 - **Frontend port already in use:** Use `FRONTEND_DEV_PORT` (for `npm run dev`), `FRONTEND_PREVIEW_PORT` (for `npm run preview`), `FRONTEND_WEB_PORT` (for the standalone Compose stack), or `MIDDLEWARE_FRONTEND_WEB_PORT` (for the middleware stack) to remap the host port when `5173/5174` are occupied.
+- **Stockmarket port already in use:** Set `STOCKMARKET_WEB_PORT` before running `docker compose -f stockmarket-compose.yml up --build` to relocate the simulator from `8100` to an available host port.
 
 ## Data Store Stack
 The `apps/datastore/datastore-compose.yml` stack mirrors the architecture defined in the data store blueprint. It provisions:
@@ -79,6 +83,21 @@ The `apps/datastore/datastore-compose.yml` stack mirrors the architecture define
 
 Bring the stack online with `docker compose -f apps/datastore/datastore-compose.yml up --build` and connect services using the shared `datastore-net` bridge network. Default credentials are scoped to local development and should be replaced in production-like scenarios.
 
+## Stockmarket Simulation Stack
+The `stockmarket-compose.yml` stack provides the executable market sandbox referenced throughout the design blueprint.
+
+- **Service:** `stockmarket-simulator` container (`vb-stockmarket`) built from [`app/stockmarket`](app/stockmarket/) and powered by FastAPI.
+- **Endpoints:** REST API on `http://localhost:8100` exposing tickers, regimes, orders, portfolios, and trades plus a WebSocket stream at `ws://localhost:8100/ws/ticks` for live updates.
+- **Datasets:** Automatically mounts [`docs/dataset`](docs/dataset/) read-only so the simulator ingests the curated tickers without manual copying.
+- **Networks:** Joins `virtualbank-backplane` (shared with middleware) and `virtualbank-datastore` so future datastore integrations do not require manual wiring.
+- **Configuration:** Tune tick cadence (`STOCKMARKET_TICK_INTERVAL`), news frequency (`STOCKMARKET_NEWS_INTERVAL`), dataset path, and host port (`STOCKMARKET_WEB_PORT`) purely through environment variables.
+
+| Service | Host Port | Notes |
+| --- | --- | --- |
+| Stockmarket simulator | `8100` | REST + WebSocket gateway for the synthetic market engine. |
+
+Run the stack with `docker compose -f stockmarket-compose.yml up --build` after the datastore stack is online (creates the shared `virtualbank-datastore` network) to expose the full simulator locally, or rely on `scripts/maintenance.sh install` for zero-touch provisioning.
+
 ## Middleware Core Service
 - **Endpoints:**
   - Liveness probe at `/health/live` and readiness probe at `/health/ready` (includes datastore status).
@@ -88,6 +107,7 @@ Bring the stack online with `docker compose -f apps/datastore/datastore-compose.
 - **Streaming:** WebSocket stream at `/api/v1/sessions/stream` that emits ready, heartbeat, and demo portfolio updates so the frontend can wire real-time dashboards.
 - **Operational guarantees:** Built-in rate limiting, in-memory idempotency cache, structured logging hooks for transfers/credits/orders, and configurable environment via `MIDDLEWARE_*` variables (including session heartbeat tuning).
 - **Configuration:** Use the `DATASTORE_*` variables to point the middleware at PostgreSQL. Defaults target the Compose network service (`vb_app`/`vb_app_password` on `postgres-primary:5432`). When running the middleware outside Docker, point it at `localhost:15432` (or override the compose ports) to reach the primary database, or provide a `DATASTORE_URL` connection string when using managed instances.
+- **Stockmarket bridge:** The middleware discovers the simulator through `STOCKMARKET_BASE_URL` (defaults to `http://vb-stockmarket:8100` inside Docker via the shared `virtualbank-backplane` network) so order APIs and WebSocket fan-out can reach the synthetic market without manual host overrides.
 - **Local development:** Hot-reloading through `npm run dev`, TypeScript compilation with `npm run build`, and production-ready Docker image leveraging a distroless runtime.
 
 ## Datasets

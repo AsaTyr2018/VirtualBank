@@ -1,0 +1,27 @@
+name: stockmarket-stack
+
+services:
+  stockmarket-simulator:
+    build:
+      context: ./app/stockmarket
+    container_name: vb-stockmarket
+    environment:
+      STOCKMARKET_DATASET_PATH: /app/data/dataset/fake_companies.json
+      STOCKMARKET_TICK_INTERVAL: "${STOCKMARKET_TICK_INTERVAL:-1.0}"
+      STOCKMARKET_NEWS_INTERVAL: "${STOCKMARKET_NEWS_INTERVAL:-45}"
+    ports:
+      - "${STOCKMARKET_WEB_PORT:-8100}:8100"
+    volumes:
+      - ./docs/dataset:/app/data/dataset:ro
+    networks:
+      - backplane-net
+      - datastore-net
+    restart: unless-stopped
+
+networks:
+  backplane-net:
+    name: virtualbank-backplane
+    driver: bridge
+  datastore-net:
+    external: true
+    name: virtualbank-datastore

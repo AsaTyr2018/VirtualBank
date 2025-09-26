@@ -148,3 +148,16 @@ To consider the Stockmarket component production-ready:
 4. Circuit breaker and risk enforcement rules are verified via simulation scenarios.
 5. Observability dashboards display green across tick rate, order latency, error budget, and halt notifications.
 6. README and Changelog stay synchronized with capability updates.
+
+## 11. Implementation Snapshot (FastAPI Prototype)
+The executable prototype (`app/stockmarket`) delivers an integrated slice of the architecture while broader polyglot services remain on the roadmap:
+
+- **Technology:** Python 3.11 + FastAPI with asyncio background loops for tick generation, news rotation, regime switching, and WebSocket broadcasting.
+- **Datasets:** Loads [`docs/dataset/fake_companies.json`](../../dataset/fake_companies.json) at startup to seed baseline pricing, volatility hints, and sector context.
+- **Order Handling:** Provides limit/market order intake (`POST /api/v1/orders`) with in-memory price/time priority books, simple matching, and trade capture for downstream portfolio updates.
+- **Portfolio Tracking:** Aggregates fills per user and exposes cash/position snapshots at `GET /api/v1/portfolios/{userId}` while streaming tick data on `/ws/ticks` for UI overlays.
+- **Regimes & News:** Rotates through Calm, Rally, Turbulence, and Correction regimes every five minutes; emits synthetic sentiment-tagged headlines every 45 seconds to mimic market chatter.
+- **Docker Orchestration:** Built and shipped via [`stockmarket-compose.yml`](../../../stockmarket-compose.yml) which mounts datasets read-only, attaches to the shared `virtualbank-backplane` network for middleware discovery, and honours environment overrides for tick cadence and host ports.
+- **Maintenance Integration:** `scripts/maintenance.sh` now orchestrates datastore → stockmarket → middleware boot order so maintainers deploy the full trading sandbox with a single `install` or `update` invocation, and `uninstall` tears down all related containers and volumes.
+
+This prototype anchors end-to-end demos while the modular microservices outlined above iteratively replace the monolithic loop with specialised engines.

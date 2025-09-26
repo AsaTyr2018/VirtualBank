@@ -146,6 +146,7 @@ services:
 
 networks:
   datastore-net:
+    name: virtualbank-datastore
     driver: bridge
 
 volumes:

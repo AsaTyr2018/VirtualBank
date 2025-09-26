@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.028] Stockmarket Simulation Stack Bootstrap
+- **Change Type:** Normal Change
+- **Reason:** Deliver an executable stockmarket simulator with zero-touch operations so maintainers can deploy the full trading sandbox alongside middleware and datastore services.
+- **What Changed:** Added the FastAPI-based stockmarket engine with Docker packaging, introduced `stockmarket-compose.yml` and shared network configuration, updated the maintenance script to manage datastore → stockmarket → middleware lifecycles, refreshed the README with stack guidance, and documented the implementation snapshot in the stockmarket design blueprint.
+
 ## [0.00.027] Middleware Helmet Compatibility
 - **Change Type:** Emergency Change
 - **Reason:** The middleware container crashed during startup because `@fastify/helmet` v13 requires Fastify v5, while the stack still ships Fastify v4, causing Docker deployments to fail immediately.
