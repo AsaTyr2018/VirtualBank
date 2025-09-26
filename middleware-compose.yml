@@ -13,8 +13,11 @@ services:
       RATE_LIMIT_MAX: 200
       RATE_LIMIT_TIME_WINDOW: 1 minute
       IDEMPOTENCY_TTL_SECONDS: 600
-      PUBLIC_BASE_URL: http://localhost:8080
-      STOCKMARKET_BASE_URL: http://vb-stockmarket:8100
+      PUBLIC_BASE_URL: "${MIDDLEWARE_PUBLIC_BASE_URL:-http://localhost:8080}"
+      STOCKMARKET_BASE_URL: "${MIDDLEWARE_STOCKMARKET_BASE_URL:-http://vb-stockmarket:8100}"
+      AUTH_API_KEYS: "${AUTH_API_KEYS:-}"
+      AUTH_API_KEY_HEADER: "${AUTH_API_KEY_HEADER:-x-api-key}"
+      AUTH_SESSION_HEADER: "${AUTH_SESSION_HEADER:-x-session-id}"
       DATASTORE_HOST: postgres-primary
       DATASTORE_PORT: 5432
       DATASTORE_USER: vb_app

@@ -8,5 +8,9 @@ services:
       - "${FRONTEND_WEB_PORT:-5173}:5173"
     environment:
       NODE_ENV: production
+      VITE_MIDDLEWARE_BASE_URL: "${VITE_MIDDLEWARE_BASE_URL:-http://localhost:8080}"
+      VITE_MIDDLEWARE_API_KEY: "${VITE_MIDDLEWARE_API_KEY:-sandbox-secret}"
+      VITE_MIDDLEWARE_API_KEY_HEADER: "${VITE_MIDDLEWARE_API_KEY_HEADER:-x-api-key}"
+      VITE_MIDDLEWARE_SESSION_HEADER: "${VITE_MIDDLEWARE_SESSION_HEADER:-x-session-id}"
     command: npm run preview -- --host 0.0.0.0 --port 5173
     restart: unless-stopped

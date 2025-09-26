@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.038] API Connectivity Automation
+- **Change Type:** Normal Change
+- **Reason:** Provide a turnkey way to generate aligned API credentials and confirm cross-service connectivity so teams can bring up the stack without manual key choreography.
+- **What Changed:** Added the `scripts/connectivity.sh` helper to mint shared secrets, write environment overlays, and validate middleware/stockmarket/frontend endpoints; taught Compose stacks to honour injected auth variables; refreshed the README with the new workflow; and documented the improvement here.
+
 # [0.00.037] Stockmarket Simulator Phase 4 Delivery
 - **Change Type:** Normal Change
 - **Reason:** Implement Phase 4 of the delivery roadmap so the stockmarket simulator gains modular services, durable storage, risk governance, and analytics parity with the documented architecture.
