@@ -35,6 +35,9 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 - **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
 - **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
 
+## Roadmap & Next Steps
+Track the active delivery plan in [`docs/roadmap/next-steps.md`](docs/roadmap/next-steps.md). The roadmap focuses on hardening the middleware foundations first, then connecting the datastore and stockmarket services, modernizing the frontend to consume live data, and finally scaling the simulator alongside cross-cutting security and operations initiatives.
+
 ## Frontend Experience
 - **Technology stack:** React + TypeScript + Vite with React Query and Zustand managing optimistic data flows.
 - **Feature highlights:** Guided onboarding journey, real-time dashboard metrics, celebratory transfer wizard, market desk heatmaps, and Game Master governance console.
