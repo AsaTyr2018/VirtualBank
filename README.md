@@ -30,6 +30,8 @@ The `scripts/maintenance.sh` helper orchestrates installation and lifecycle task
 
 Example usage: `sudo ./scripts/maintenance.sh install`.
 
+The installer now auto-detects the primary host address and feeds it into the connectivity bundle so the generated frontend and API URLs point to a reachable origin out of the box. Override the detection when necessary (for example, behind load balancers or custom domains) by exporting `VIRTUALBANK_PUBLIC_HOST`, `VIRTUALBANK_MIDDLEWARE_URL`, `VIRTUALBANK_FRONTEND_URL`, or `VIRTUALBANK_STOCKMARKET_URL` before running the maintenance script.
+
 Both `install` and `update` wait for the datastore services to report healthy, seed the `market_companies` table, rehydrate the shared connectivity bundle, and confirm the middleware/frontend probes succeed before reporting success. Each run tears down the running containers first and rebuilds images without cache, guaranteeing that regenerated API keys and Compose environment overrides flow into the restarted services. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
 
 If any container misses its readiness window, the script now prints a status summary and the tail of the Docker logs so you can triage the failure immediately instead of re-running Compose commands manually.

@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.044] Automated Host Detection For Connectivity Bundles
+- **Change Type:** Emergency Change
+- **Reason:** Maintenance-driven installs still yielded frontends that attempted to reach the middleware on unreachable origins, forcing operators to hand-edit environment files after every rollout.
+- **What Changed:** Enhanced `scripts/maintenance.sh` to auto-detect the primary host address (with overrides via `VIRTUALBANK_PUBLIC_HOST`) when generating connectivity bundles so middleware, frontend, and stockmarket URLs align out of the box, and refreshed the README with the new behaviour and override guidance.
+
 # [0.00.043] Middleware Datastore Connection Retry
 - **Change Type:** Emergency Change
 - **Reason:** Maintenance installs reported middleware live probe failures because the service exited after the first PostgreSQL handshake attempt while the database was still warming up.

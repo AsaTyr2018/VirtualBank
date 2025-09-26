@@ -12,36 +12,94 @@ POSTGRES_USER="vb_app"
 POSTGRES_PASSWORD="vb_app_password"
 CONNECTION_ENV_FILE="connection.env"
 CONNECTIVITY_SCRIPT="scripts/connectivity.sh"
+RESOLVED_PUBLIC_HOST=""
 
 PARSED_API_KEY_ID=""
 PARSED_API_KEY_SECRET=""
 PARSED_API_KEY_HEADER=""
 PARSED_SESSION_HEADER=""
 
+detect_primary_address() {
+  local candidate=""
+
+  if [[ -n "${VIRTUALBANK_PUBLIC_HOST:-}" ]]; then
+    printf '%s' "${VIRTUALBANK_PUBLIC_HOST}"
+    return
+  fi
+
+  if [[ -n "${RESOLVED_PUBLIC_HOST}" ]]; then
+    printf '%s' "${RESOLVED_PUBLIC_HOST}"
+    return
+  fi
+
+  if command -v ip >/dev/null 2>&1; then
+    candidate=$(ip route get 1.1.1.1 2>/dev/null | awk '/src/ {for (i=1; i<=NF; ++i) if ($i == "src") {print $(i+1); exit}}')
+  fi
+
+  if [[ -z "$candidate" ]] && command -v hostname >/dev/null 2>&1; then
+    candidate=$(hostname -I 2>/dev/null | awk '{print $1}')
+  fi
+
+  if [[ -z "$candidate" ]] && command -v getent >/dev/null 2>&1; then
+    candidate=$(getent hosts "$(hostname)" 2>/dev/null | awk 'NR==1 {print $1}')
+  fi
+
+  if [[ -z "$candidate" ]]; then
+    candidate="127.0.0.1"
+  fi
+
+  case "$candidate" in
+    127.0.0.1|::1)
+      candidate="localhost"
+      ;;
+  esac
+
+  RESOLVED_PUBLIC_HOST="$candidate"
+  printf '%s' "${RESOLVED_PUBLIC_HOST}"
+}
+
+format_host_for_url() {
+  local host="$1"
+  if [[ "$host" == \[* ]]; then
+    printf '%s' "$host"
+  elif [[ "$host" == *:* ]]; then
+    printf '[%s]' "$host"
+  else
+    printf '%s' "$host"
+  fi
+}
+
+compose_public_url() {
+  local port="$1"
+  local host
+  host="$(detect_primary_address)"
+  printf 'http://%s:%s' "$(format_host_for_url "$host")" "$port"
+}
+
 middleware_public_url() {
   if [[ -n "${VIRTUALBANK_MIDDLEWARE_URL:-}" ]]; then
     printf '%s' "${VIRTUALBANK_MIDDLEWARE_URL}"
-  else
-    printf 'http://localhost:%s' "${VIRTUALBANK_MIDDLEWARE_PORT:-8080}"
+    return
   fi
+  compose_public_url "${VIRTUALBANK_MIDDLEWARE_PORT:-8080}"
 }
 
 frontend_public_url() {
   if [[ -n "${VIRTUALBANK_FRONTEND_URL:-}" ]]; then
     printf '%s' "${VIRTUALBANK_FRONTEND_URL}"
-  else
-    local port
-    port="${VIRTUALBANK_FRONTEND_PORT:-${MIDDLEWARE_FRONTEND_WEB_PORT:-5174}}"
-    printf 'http://localhost:%s' "$port"
+    return
   fi
+  local port
+  port="${VIRTUALBANK_FRONTEND_PORT:-${MIDDLEWARE_FRONTEND_WEB_PORT:-5174}}"
+  compose_public_url "$port"
 }
 
 stockmarket_public_url() {
   if [[ -n "${VIRTUALBANK_STOCKMARKET_URL:-}" ]]; then
     printf '%s' "${VIRTUALBANK_STOCKMARKET_URL}"
-  else
-    printf 'http://localhost:%s' "${VIRTUALBANK_STOCKMARKET_PORT:-8100}"
+    return
   fi
+  compose_public_url "${VIRTUALBANK_STOCKMARKET_PORT:-8100}"
 }
 
 reset_parsed_credentials() {
