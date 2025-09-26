@@ -16,21 +16,21 @@ VirtualBank is a playful online banking simulator for exploring modern money-man
 
 ## API Connectivity Automation
 
-Run `./scripts/connectivity.sh` from the repository root to provision aligned API credentials for every service. The helper writes `connection.env` for Compose and component-scoped `.env.connection` files, checks the middleware and stockmarket health probes, and exercises an authenticated middleware endpoint to confirm the generated key works. Re-run with `--force` to overwrite existing files or `--deep-check` for a readiness probe, then launch stacks with `docker compose --env-file connection.env -f middleware-compose.yml up --build` to apply the shared configuration.
+Run `./scripts/connectivity.sh` from the repository root to provision aligned API credentials for every service. The helper writes `connection.env` for Compose and component-scoped `.env.connection` files, checks the middleware and stockmarket health probes, and exercises an authenticated middleware endpoint to confirm the generated key works. Re-run with `--force` to overwrite existing files or `--deep-check` for a readiness probe, then launch stacks with `docker compose --env-file connection.env -f middleware-compose.yml up --build` to apply the shared configuration. Pass `--skip-checks` when you only need to refresh the files before the stack is online—the maintenance script uses this mode while bootstrapping environments and reruns the full verification once services are healthy.
 
 ## Automated Maintenance
 The `scripts/maintenance.sh` helper orchestrates installation and lifecycle tasks for production-like environments. Execute the script as `root` (or with `sudo`) and pass one of the following commands:
 
 | Command | Description |
 | --- | --- |
-| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, and starts the datastore, stockmarket, and middleware stacks with shared networks. |
-| `update` | Pulls the latest commits, rebuilds containers, and reapplies the datastore, stockmarket, and middleware stacks. |
+| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, generates shared API credentials, and starts the datastore → stockmarket → middleware stacks with shared networks. |
+| `update` | Pulls the latest commits, refreshes shared API credentials, rebuilds containers, and reapplies the datastore → stockmarket → middleware stacks. |
 | `uninstall` | Stops active Compose services, removes related volumes, and deletes `/opt/VirtualBank`. |
 | `check-updates` | Contacts GitHub to determine whether newer commits are available without applying changes. |
 
 Example usage: `sudo ./scripts/maintenance.sh install`.
 
-Both `install` and `update` wait for the PostgreSQL primary to become ready, seed the `market_companies` table, and ensure the stockmarket simulator is reachable for middleware bridging before reporting success. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
+Both `install` and `update` wait for the datastore services to report healthy, seed the `market_companies` table, rehydrate the shared connectivity bundle, and confirm the middleware/frontend probes succeed before reporting success. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
