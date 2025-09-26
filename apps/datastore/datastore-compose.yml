@@ -41,10 +41,14 @@ services:
       - POSTGRESQL_REPLICATION_MODE=slave
       - POSTGRESQL_PRIMARY_HOST=postgres-primary
       - POSTGRESQL_PRIMARY_PORT_NUMBER=5432
+      - POSTGRESQL_MASTER_HOST=postgres-primary
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
       - POSTGRESQL_REPLICATION_USER=vb_repl
       - POSTGRESQL_REPLICATION_PASSWORD=vb_repl_password
       - POSTGRESQL_PRIMARY_USER=vb_app
       - POSTGRESQL_PRIMARY_PASSWORD=vb_app_password
+      - POSTGRESQL_MASTER_USER=vb_app
+      - POSTGRESQL_MASTER_PASSWORD=vb_app_password
       - ALLOW_EMPTY_PASSWORD=no
     volumes:
       - postgres-replica-data:/bitnami/postgresql
@@ -92,7 +96,7 @@ services:
       - KAFKA_CFG_NUM_PARTITIONS=3
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_KRAFT_CLUSTER_ID=4L6g3nShT-eMCtK--X86w
+      - KAFKA_KRAFT_CLUSTER_ID=UyrxPpcZpVFK1ChhDpIdjA
     volumes:
       - kafka-data:/bitnami/kafka
     healthcheck:
@@ -141,6 +145,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 60s
     networks:
       - datastore-net
 

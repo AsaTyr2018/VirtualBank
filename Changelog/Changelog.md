@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.046] Datastore Stack Boot Recovery
+- **Change Type:** Emergency Change
+- **Reason:** Maintenance rebuilds stalled because the PostgreSQL replica rejected startup without the legacy `POSTGRESQL_MASTER_*` variables, Kafka refused to format storage with the deprecated cluster ID, and MinIO's health probe fired before the service finished its warm-up cycle.
+- **What Changed:** Exported both legacy and modern PostgreSQL replication variables so the replica can locate the primary across Bitnami tag revisions, regenerated the Kafka KRaft cluster ID using a valid Base64URL value, extended the MinIO health-check start period, and refreshed the README with compatibility guidance for future overrides.
+
 # [0.00.045] Middleware Plugin Timeout Extension
 - **Change Type:** Emergency Change
 - **Reason:** Middleware restarts continued because Fastify aborted the datastore plugin while it was still creating indexes on large datasets, preventing the API from ever exposing its health probes.
