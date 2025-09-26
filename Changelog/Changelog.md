@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.040] Maintenance Connectivity Orchestration
+- **Change Type:** Normal Change
+- **Reason:** Ensure API credentials are provisioned automatically and containers start in a reliable order during unattended maintenance runs.
+- **What Changed:** Extended `scripts/maintenance.sh` to generate and reuse connectivity bundles before and after stack rebuilds, taught it to wait for datastore, stockmarket, and middleware services in sequence, added a `--skip-checks` mode to `scripts/connectivity.sh` for pre-boot generation, refreshed the README with the new automation notes, and documented the improvement here.
+
 # [0.00.039] Middleware Plugin Timeout Safeguard
 - **Change Type:** Emergency Change
 - **Reason:** The middleware container exited because the datastore plugin needed longer than Fastify's default 10-second readiness window when large schema migrations were running, triggering repeated boot failures.

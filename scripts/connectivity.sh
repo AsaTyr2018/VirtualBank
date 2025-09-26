@@ -16,6 +16,7 @@ Options:
   --api-key <secret>       API key secret (random when omitted)
   --api-key-header <name>  API key header name (default: x-api-key)
   --session-header <name>  Session header name (default: x-session-id)
+  --skip-checks            Generate files without performing HTTP checks
   --force                  Overwrite existing connection files
   --deep-check             Attempt authenticated middleware endpoints (may fail
                            if datastores are offline)
@@ -155,6 +156,7 @@ API_KEY_HEADER="x-api-key"
 SESSION_HEADER="x-session-id"
 FORCE=0
 DEEP_CHECK=0
+SKIP_CHECKS=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -185,6 +187,10 @@ while [[ $# -gt 0 ]]; do
     --session-header)
       SESSION_HEADER="$2"
       shift 2
+      ;;
+    --skip-checks)
+      SKIP_CHECKS=1
+      shift
       ;;
     --force)
       FORCE=1
@@ -300,15 +306,19 @@ log "  - ${MW_ENV_FILE}"
 log "  - ${FRONTEND_ENV_FILE}"
 log "  - ${STOCKMARKET_ENV_FILE}"
 
-check_endpoint "Middleware live probe" "${MIDDLEWARE_URL}/health/live" required
-check_endpoint "Stockmarket live probe" "${STOCKMARKET_URL}/health/live" optional
-check_endpoint "Frontend availability" "${FRONTEND_URL}" optional -L
+if (( SKIP_CHECKS )); then
+  log "Skipping connectivity checks (--skip-checks requested)."
+else
+  check_endpoint "Middleware live probe" "${MIDDLEWARE_URL}/health/live" required
+  check_endpoint "Stockmarket live probe" "${STOCKMARKET_URL}/health/live" optional
+  check_endpoint "Frontend availability" "${FRONTEND_URL}" optional -L
 
-SESSION_TOKEN="$(generate_uuid)"
-check_protected_endpoint "${MIDDLEWARE_URL}/api/v1/transfers/__connection-check" "${API_KEY_HEADER}" "${API_KEY_SECRET}" "${SESSION_HEADER}" "${SESSION_TOKEN}" "Protected middleware request"
+  SESSION_TOKEN="$(generate_uuid)"
+  check_protected_endpoint "${MIDDLEWARE_URL}/api/v1/transfers/__connection-check" "${API_KEY_HEADER}" "${API_KEY_SECRET}" "${SESSION_HEADER}" "${SESSION_TOKEN}" "Protected middleware request"
 
-if (( DEEP_CHECK )); then
-  check_endpoint "Middleware readiness" "${MIDDLEWARE_URL}/health/ready" required
+  if (( DEEP_CHECK )); then
+    check_endpoint "Middleware readiness" "${MIDDLEWARE_URL}/health/ready" required
+  fi
+
+  log "Connection checks completed. Use 'docker compose --env-file connection.env -f middleware-compose.yml up --build' to launch the stack with the generated credentials."
 fi
-
-log "Connection checks completed. Use 'docker compose --env-file connection.env -f middleware-compose.yml up --build' to launch the stack with the generated credentials."
