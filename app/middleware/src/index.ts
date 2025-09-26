@@ -26,7 +26,8 @@ async function buildServer() {
     logger: {
       level: config.env === 'development' ? 'debug' : 'info',
       transport: config.env === 'development' ? { target: 'pino-pretty' } : undefined
-    }
+    },
+    pluginTimeout: config.pluginTimeoutMs
   }).withTypeProvider<TypeBoxTypeProvider>();
 
   await app.register(sensible);

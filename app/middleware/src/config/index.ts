@@ -72,6 +72,7 @@ export const config = {
   env: env.NODE_ENV ?? 'development',
   host: env.MIDDLEWARE_HOST ?? '0.0.0.0',
   port: Number(env.MIDDLEWARE_PORT ?? '8080'),
+  pluginTimeoutMs: Number(env.MIDDLEWARE_PLUGIN_TIMEOUT_MS ?? '60000'),
   rateLimit: {
     max: Number(env.RATE_LIMIT_MAX ?? '100'),
     timeWindow: env.RATE_LIMIT_TIME_WINDOW ?? '1 minute'
