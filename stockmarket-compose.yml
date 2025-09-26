@@ -20,8 +20,8 @@ services:
 
 networks:
   backplane-net:
+    external: true
     name: virtualbank-backplane
-    driver: bridge
   datastore-net:
     external: true
     name: virtualbank-datastore

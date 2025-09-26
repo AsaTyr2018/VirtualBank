@@ -15,6 +15,11 @@ services:
       IDEMPOTENCY_TTL_SECONDS: 600
       PUBLIC_BASE_URL: http://localhost:8080
       STOCKMARKET_BASE_URL: http://vb-stockmarket:8100
+      DATASTORE_HOST: postgres-primary
+      DATASTORE_PORT: 5432
+      DATASTORE_USER: vb_app
+      DATASTORE_PASSWORD: vb_app_password
+      DATASTORE_DATABASE: virtualbank
     restart: unless-stopped
     networks:
       - backplane-net
@@ -35,8 +40,8 @@ services:
 
 networks:
   backplane-net:
+    external: true
     name: virtualbank-backplane
-    driver: bridge
   datastore-net:
     external: true
     name: virtualbank-datastore
