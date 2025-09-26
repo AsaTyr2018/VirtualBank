@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.033] Delivery Roadmap Foundation
+- **Change Type:** Standard Change
+- **Reason:** Capture the prioritized follow-up work requested after reviewing the current implementation against the published documentation.
+- **What Changed:** Authored a delivery roadmap outlining phased tasks across middleware, datastore integrations, frontend modernization, and simulator scaling, and linked the plan from the README so contributors can discover the next steps quickly.
+
 # [0.00.032] Middleware Datastore Wiring Repair
 - **Change Type:** Emergency Change
 - **Reason:** The middleware container crashed because it attempted to reach PostgreSQL at `127.0.0.1:5432`, leaving the stack without a database connection and producing repeated boot failures alongside Docker network reuse warnings.
