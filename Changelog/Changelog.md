@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.041] Forced Container Rebuilds For Connectivity
+- **Change Type:** Emergency Change
+- **Reason:** Provisioned API credentials were not reaching running containers, leaving the frontend unable to authenticate with the middleware after maintenance runs.
+- **What Changed:** Updated `scripts/maintenance.sh` to tear down each Compose stack, rebuild images without cache, and recreate containers with `--force-recreate`, refreshed the README to highlight the new zero-cache rebuild behaviour, and documented the fix here.
+
 # [0.00.040] Maintenance Connectivity Orchestration
 - **Change Type:** Normal Change
 - **Reason:** Ensure API credentials are provisioned automatically and containers start in a reliable order during unattended maintenance runs.
