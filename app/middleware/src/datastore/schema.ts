@@ -52,6 +52,7 @@ const statements = [
       currency TEXT NOT NULL,
       occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`,
+  `ALTER TABLE ledger_entries ADD COLUMN IF NOT EXISTS account_id TEXT REFERENCES accounts(account_id) ON DELETE CASCADE`,
   `CREATE INDEX IF NOT EXISTS idx_ledger_entries_account ON ledger_entries (account_id)`,
   `CREATE TABLE IF NOT EXISTS credit_applications (
       application_id TEXT PRIMARY KEY,
