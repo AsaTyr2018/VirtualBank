@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import type { FastifyInstance } from 'fastify';
+import { submitCreditApplication } from '../services/credits.js';
 
 const CreditApplicationRequest = Type.Object({
   playerId: Type.String({ minLength: 1 }),
@@ -24,6 +25,9 @@ export async function creditRoutes(app: FastifyInstance) {
   app.post<{ Body: CreditApplicationRequestType }>(
     '/api/v1/credits/applications',
     {
+      config: {
+        requiredRoles: ['bank:credits:write']
+      },
       schema: {
         body: CreditApplicationRequest,
         response: {
@@ -47,6 +51,17 @@ export async function creditRoutes(app: FastifyInstance) {
         collateralType: body.collateralType,
         attachments: body.attachments,
         correlationId: request.id
+      });
+
+      await submitCreditApplication(app.datastore, {
+        applicationId,
+        playerId: body.playerId,
+        accountId: body.accountId,
+        requestedLimit: body.requestedLimit,
+        currency: body.currency,
+        justification: body.justification,
+        collateralType: body.collateralType,
+        attachments: body.attachments
       });
 
       return reply.code(202).send({

@@ -24,6 +24,7 @@ const ReadyResponse = Type.Object({
 
 export async function healthRoutes(app: FastifyInstance) {
   app.get('/health/live', {
+    config: { public: true },
     schema: {
       response: {
         200: LiveResponse
@@ -36,6 +37,7 @@ export async function healthRoutes(app: FastifyInstance) {
   }));
 
   app.get('/health/ready', {
+    config: { public: true },
     schema: {
       response: {
         200: ReadyResponse,

@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 import type { FastifyInstance } from 'fastify';
 import { Pool, type PoolConfig, type QueryResult, type QueryResultRow } from 'pg';
+import { ensureSchema } from '../datastore/schema.js';
 
 export type Datastore = {
   pool: Pool;
@@ -58,6 +59,8 @@ export const datastorePlugin = fp(async (app: FastifyInstance) => {
       return { status: 'connected', latencyMs: duration };
     }
   };
+
+  await ensureSchema(datastoreApi);
 
   app.decorate('datastore', datastoreApi);
 

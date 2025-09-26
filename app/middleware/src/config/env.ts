@@ -24,7 +24,10 @@ const EnvSchema = Type.Object({
   ),
   DATASTORE_POOL_MAX: Type.Optional(Type.String({ default: '10' })),
   DATASTORE_POOL_IDLE_MS: Type.Optional(Type.String({ default: '10000' })),
-  DATASTORE_POOL_CONNECTION_TIMEOUT_MS: Type.Optional(Type.String({ default: '5000' }))
+  DATASTORE_POOL_CONNECTION_TIMEOUT_MS: Type.Optional(Type.String({ default: '5000' })),
+  AUTH_API_KEYS: Type.Optional(Type.String()),
+  AUTH_API_KEY_HEADER: Type.Optional(Type.String({ default: 'x-api-key' })),
+  AUTH_SESSION_HEADER: Type.Optional(Type.String({ default: 'x-session-id' }))
 });
 
 export type EnvConfig = Static<typeof EnvSchema>;
@@ -56,6 +59,9 @@ export function parseEnv(env: NodeJS.ProcessEnv): EnvConfig {
     DATASTORE_SSL_MODE: (result.DATASTORE_SSL_MODE as EnvConfig['DATASTORE_SSL_MODE']) ?? 'disable',
     DATASTORE_POOL_MAX: result.DATASTORE_POOL_MAX ?? '10',
     DATASTORE_POOL_IDLE_MS: result.DATASTORE_POOL_IDLE_MS ?? '10000',
-    DATASTORE_POOL_CONNECTION_TIMEOUT_MS: result.DATASTORE_POOL_CONNECTION_TIMEOUT_MS ?? '5000'
+    DATASTORE_POOL_CONNECTION_TIMEOUT_MS: result.DATASTORE_POOL_CONNECTION_TIMEOUT_MS ?? '5000',
+    AUTH_API_KEYS: result.AUTH_API_KEYS,
+    AUTH_API_KEY_HEADER: result.AUTH_API_KEY_HEADER ?? 'x-api-key',
+    AUTH_SESSION_HEADER: result.AUTH_SESSION_HEADER ?? 'x-session-id'
   };
 }

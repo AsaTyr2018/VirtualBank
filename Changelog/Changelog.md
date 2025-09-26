@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.034] Middleware Foundation Hardening
+- **Change Type:** Normal Change
+- **Reason:** Complete the roadmap's Phase 1 middleware foundations so that request deduplication, transactional persistence, authentication, and observability align with the documented architecture.
+- **What Changed:** Moved idempotency storage into PostgreSQL with replay protection, persisted transfers/credits/market orders through transactional workflows, introduced API key + session RBAC guards with metrics-protected routes, instrumented request logging and Prometheus telemetry, refreshed the README, and marked Phase 1 as delivered in the roadmap.
+
 # [0.00.033] Delivery Roadmap Foundation
 - **Change Type:** Standard Change
 - **Reason:** Capture the prioritized follow-up work requested after reviewing the current implementation against the published documentation.

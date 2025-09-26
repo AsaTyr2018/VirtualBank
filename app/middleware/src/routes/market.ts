@@ -1,5 +1,6 @@
 import { Static, Type } from '@sinclair/typebox';
 import type { FastifyInstance } from 'fastify';
+import { recordMarketOrder } from '../services/market.js';
 
 const MarketOrderRequest = Type.Object({
   accountId: Type.String({ minLength: 1 }),
@@ -23,6 +24,9 @@ export async function marketRoutes(app: FastifyInstance) {
   app.post<{ Body: MarketOrderRequestType }>(
     '/api/v1/market/orders',
     {
+      config: {
+        requiredRoles: ['market:orders:write']
+      },
       schema: {
         body: MarketOrderRequest,
         response: {
@@ -50,6 +54,17 @@ export async function marketRoutes(app: FastifyInstance) {
         limitPrice: body.limitPrice,
         timeInForce: body.timeInForce,
         correlationId: request.id
+      });
+
+      await recordMarketOrder(app.datastore, {
+        orderId,
+        accountId: body.accountId,
+        symbol: body.symbol,
+        side: body.side,
+        orderType: body.orderType,
+        quantity: body.quantity,
+        limitPrice: body.limitPrice,
+        timeInForce: body.timeInForce
       });
 
       return reply.code(202).send({
