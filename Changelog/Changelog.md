@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.048] Ledger Schema Recovery
+- **Change Type:** Emergency Change
+- **Reason:** Middleware bootstraps failed because PostgreSQL instances created before the ledger schema refactor were missing the `account_id` column, so index creation aborted and the service never finished its startup.
+- **What Changed:** Added a defensive migration step that backfills the `ledger_entries.account_id` column when absent before rebuilding the related index, restoring middleware compatibility with existing databases.
+
 # [0.00.047] MinIO Health Probe Authentication
 - **Change Type:** Emergency Change
 - **Reason:** The datastore maintenance runs and compose health checks reported MinIO as unhealthy because the S3 API blocked unauthenticated requests to the `/minio/health/live` endpoint.
