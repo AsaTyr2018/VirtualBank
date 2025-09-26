@@ -34,7 +34,8 @@ Both `install` and `update` wait for the PostgreSQL primary to become ready, see
 - **Operational telemetry** with Prometheus metrics, request tracing, and centralized error handling for rapid incident response.
 - **Modular architecture** spanning the frontend, middleware orchestration, stock market simulation, and resilient data stores.
 - **Multi-user economy** where players manage personal accounts while Game Masters steward the world through privileged tooling.
-- **Dynamic stock market sandbox** with AI-driven price regimes, sector indices, and fair-play trading mechanics.
+- **Dynamic stock market sandbox** with modular pricing, matching, risk, and analytics services plus durable order books that
+  feed ClickHouse dashboards in real time.
 - **Data & integration layer** powered by Prisma-aligned SQL schemas, Redis caching, Kafka event streaming, and a hardened stockmarket bridge for real-time trading flows.
 
 ## Roadmap & Next Steps
@@ -109,10 +110,25 @@ The `stockmarket-compose.yml` stack provides the executable market sandbox refer
 - **Datasets:** Automatically mounts [`docs/dataset`](docs/dataset/) read-only so the simulator ingests the curated tickers without manual copying.
 - **Networks:** Joins `virtualbank-backplane` (shared with middleware) and `virtualbank-datastore` so future datastore integrations do not require manual wiring.
 - **Configuration:** Tune tick cadence (`STOCKMARKET_TICK_INTERVAL`), news frequency (`STOCKMARKET_NEWS_INTERVAL`), dataset path, and host port (`STOCKMARKET_WEB_PORT`) purely through environment variables.
+- **Internals:** Pricing, matching, risk, and analytics services run as dedicated modules. Orders, portfolios, and tick snapshots persist to PostgreSQL/Redis while middleware-facing risk loops gate order intake and feed ClickHouse analytics.
 
 | Service | Host Port | Notes |
 | --- | --- | --- |
 | Stockmarket simulator | `8100` | REST + WebSocket gateway for the synthetic market engine. |
+
+### Configuration
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `STOCKMARKET_POSTGRES_DSN` | _unset_ | PostgreSQL connection string for persisting orders, portfolios, and tick history. Leave unset to keep in-memory storage for development. |
+| `STOCKMARKET_REDIS_URL` | _unset_ | Redis URL for caching live ticker snapshots that hydrate API and WebSocket responses. |
+| `STOCKMARKET_MIDDLEWARE_BASE_URL` | _unset_ | Middleware origin that receives risk events and returns credit availability checks before orders are accepted. |
+| `STOCKMARKET_CLICKHOUSE_HOST` | _unset_ | ClickHouse host used for analytics streaming (pair with `STOCKMARKET_CLICKHOUSE_PORT`, `STOCKMARKET_CLICKHOUSE_USER`, `STOCKMARKET_CLICKHOUSE_PASSWORD`, `STOCKMARKET_CLICKHOUSE_DATABASE`). |
+| `STOCKMARKET_CLICKHOUSE_PORT` | `8123` | ClickHouse HTTP port used by the analytics pipeline. |
+| `STOCKMARKET_CLICKHOUSE_USER` | _unset_ | Optional ClickHouse username when authentication is enabled. |
+| `STOCKMARKET_CLICKHOUSE_PASSWORD` | _unset_ | Optional ClickHouse password paired with the user field. |
+| `STOCKMARKET_ANALYTICS_ENABLED` | `true` | Toggle analytics writes without removing ClickHouse credentials. |
+| `STOCKMARKET_HTTP_TIMEOUT` | `5` | Timeout (seconds) for middleware risk feedback HTTP calls. |
 
 Run the stack with `docker compose -f stockmarket-compose.yml up --build` after the datastore stack is online (creates the shared `virtualbank-datastore` network) to expose the full simulator locally, or rely on `scripts/maintenance.sh install` for zero-touch provisioning.
 

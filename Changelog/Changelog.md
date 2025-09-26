@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.037] Stockmarket Simulator Phase 4 Delivery
+- **Change Type:** Normal Change
+- **Reason:** Implement Phase 4 of the delivery roadmap so the stockmarket simulator gains modular services, durable storage, risk governance, and analytics parity with the documented architecture.
+- **What Changed:** Decomposed the simulator into pricing, matching, risk, storage, and analytics modules; wired PostgreSQL and Redis persistence for orders, portfolios, and tick data; introduced a middleware-integrated risk feedback loop with HTTP-based credit checks and event emission; streamed tick and portfolio snapshots into ClickHouse; refreshed the REST bootstrap to manage new dependencies; updated the README and roadmap to capture the new configuration surface; and documented the delivery here.
+
 # [0.00.036] Frontend Experience Modernization
 - **Change Type:** Normal Change
 - **Reason:** Deliver Phase 3 of the roadmap by replacing fixture-driven UI data with live middleware integrations, shipping real-time dashboards, polishing the transfer UX, and hardening the design system.

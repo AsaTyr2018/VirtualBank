@@ -26,10 +26,10 @@ This roadmap translates the documentation gaps into actionable workstreams so co
 4. [x] **Design system hardening** – Introduced theme tokens, focus treatments, Storybook stories with the a11y addon, and scripts for automated accessibility checks.
 
 ## Phase 4 – Stockmarket Simulator
-1. **Service decomposition** – Split matching, pricing, risk, and analytics into dedicated modules/services.
-2. **Persistent storage** – Move portfolios, orders, and ticks into PostgreSQL/Redis for durability.
-3. **Risk feedback loop** – Emit risk events to middleware and adjust order intake based on credit signals.
-4. **Analytics pipeline** – Stream tick/portfolio snapshots into ClickHouse for dashboards.
+1. [x] **Service decomposition** – Split matching, pricing, risk, and analytics into dedicated modules/services.
+2. [x] **Persistent storage** – Move portfolios, orders, and ticks into PostgreSQL/Redis for durability.
+3. [x] **Risk feedback loop** – Emit risk events to middleware and adjust order intake based on credit signals.
+4. [x] **Analytics pipeline** – Stream tick/portfolio snapshots into ClickHouse for dashboards.
 
 ## Cross-Cutting Initiatives
 - **Security hardening** – TLS everywhere, anomaly detection hooks, and admin console protections.
