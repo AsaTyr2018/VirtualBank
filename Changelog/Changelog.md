@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.032] Middleware Datastore Wiring Repair
+- **Change Type:** Emergency Change
+- **Reason:** The middleware container crashed because it attempted to reach PostgreSQL at `127.0.0.1:5432`, leaving the stack without a database connection and producing repeated boot failures alongside Docker network reuse warnings.
+- **What Changed:** Pointed the middleware compose stack at the `postgres-primary` service on the shared datastore network, marked shared networks as external across compose files, taught the maintenance script to provision those bridges proactively, and refreshed the README with manual network setup guidance.
+
 ## [0.00.031] Middleware Fastify 5 Upgrade
 - **Change Type:** Emergency Change
 - **Reason:** The middleware container crashed because `@fastify/rate-limit` now requires Fastify v5 while the service was still pinned to v4, leaving the stack unable to boot.

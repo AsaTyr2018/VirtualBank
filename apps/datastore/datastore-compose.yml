@@ -146,8 +146,8 @@ services:
 
 networks:
   datastore-net:
+    external: true
     name: virtualbank-datastore
-    driver: bridge
 
 volumes:
   postgres-primary-data:

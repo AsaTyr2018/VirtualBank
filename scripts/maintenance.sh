@@ -127,6 +127,16 @@ ensure_docker_running() {
   exit 1
 }
 
+ensure_network_exists() {
+  local network_name="$1"
+  if docker network inspect "$network_name" >/dev/null 2>&1; then
+    log "Docker network ${network_name} already exists."
+    return
+  fi
+  log "Creating Docker network ${network_name}."
+  docker network create "$network_name" >/dev/null
+}
+
 clone_or_update_repo() {
   if [[ -d "${INSTALL_DIR}/.git" ]]; then
     log "Existing repository detected. Fetching updates."
@@ -152,6 +162,8 @@ rebuild_stack() {
   local compose_cmd
   compose_cmd="$(ensure_docker_compose)"
   ensure_docker_running
+  ensure_network_exists "virtualbank-backplane"
+  ensure_network_exists "virtualbank-datastore"
 
   if [[ -f "${INSTALL_DIR}/${DATASTORE_COMPOSE}" ]]; then
     log "Ensuring datastore stack is prepared using ${compose_cmd}."
