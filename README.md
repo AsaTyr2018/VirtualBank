@@ -32,6 +32,8 @@ Example usage: `sudo ./scripts/maintenance.sh install`.
 
 Both `install` and `update` wait for the datastore services to report healthy, seed the `market_companies` table, rehydrate the shared connectivity bundle, and confirm the middleware/frontend probes succeed before reporting success. Each run tears down the running containers first and rebuilds images without cache, guaranteeing that regenerated API keys and Compose environment overrides flow into the restarted services. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
 
+If any container misses its readiness window, the script now prints a status summary and the tail of the Docker logs so you can triage the failure immediately instead of re-running Compose commands manually.
+
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
 - **Secure middleware gateway** powered by Fastify 5, PostgreSQL-backed idempotency, API key + session guardrails, JSON Schema validation, and structured request logging.

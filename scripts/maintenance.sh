@@ -171,7 +171,37 @@ wait_for_container_ready() {
     sleep 3
   done
   error "Container ${container} failed to become ready within ${timeout} seconds."
+  dump_container_diagnostics "$container"
   return 1
+}
+
+dump_container_diagnostics() {
+  local container="$1"
+  if ! docker inspect "$container" >/dev/null 2>&1; then
+    warn "Skipping diagnostics for ${container}: container not found."
+    return
+  fi
+
+  local status health exit_code error_reason
+  status=$(docker inspect --format '{{.State.Status}}' "$container" 2>/dev/null || echo "unknown")
+  health=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container" 2>/dev/null || echo "unknown")
+  exit_code=$(docker inspect --format '{{.State.ExitCode}}' "$container" 2>/dev/null || echo "unknown")
+  error_reason=$(docker inspect --format '{{.State.Error}}' "$container" 2>/dev/null || true)
+  if [[ "$error_reason" == "<nil>" ]]; then
+    error_reason=""
+  fi
+
+  log "Container ${container} status after timeout: status=${status}, exit=${exit_code}, health=${health}."
+  if [[ -n "${error_reason}" ]]; then
+    warn "Container ${container} reported runtime error: ${error_reason}"
+  fi
+
+  log "Last 200 log lines from ${container}:"
+  log "---- docker logs (tail 200) : ${container} ----"
+  if ! docker logs --tail 200 "$container"; then
+    warn "Failed to read docker logs for ${container}; the container may have been removed."
+  fi
+  log "---- end docker logs : ${container} ----"
 }
 
 wait_for_http_endpoint() {
