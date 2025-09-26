@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.036] Frontend Experience Modernization
+- **Change Type:** Normal Change
+- **Reason:** Deliver Phase 3 of the roadmap by replacing fixture-driven UI data with live middleware integrations, shipping real-time dashboards, polishing the transfer UX, and hardening the design system.
+- **What Changed:** Added an experience snapshot API on the middleware, migrated the React frontend to React Query with WebSocket-powered cache updates, introduced optimistic transfer mutations with rollback guidance, refreshed theming tokens plus focus styles, stood up Storybook with accessibility tooling, updated the README and roadmap to reflect the new workflows, and logged the delivery here.
+
 # [0.00.035] Middleware Data & Integration Layer
 - **Change Type:** Normal Change
 - **Reason:** Deliver Phase 2 of the roadmap so the middleware has the documented schema, event bridge, caching tier, and stockmarket integration needed for live trading flows.

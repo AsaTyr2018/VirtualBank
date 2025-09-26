@@ -1,5 +1,5 @@
-import { useExperienceStore } from '../../hooks/useExperienceStore';
 import { Icon } from '../../components/ui/Icon';
+import { useExperienceSnapshot } from '../../hooks/useExperienceSnapshot';
 import '../../components/ui/ui.css';
 
 const sentimentEmoji = {
@@ -9,7 +9,36 @@ const sentimentEmoji = {
 } as const;
 
 export const MarketDesk = () => {
-  const { market } = useExperienceStore();
+  const { data, isLoading, isError, error, refetch } = useExperienceSnapshot();
+
+  if (isLoading) {
+    return (
+      <section className="card">
+        <div className="section-title">
+          <h2>Loading market desk</h2>
+          <p>Subscribing to the middleware feed…</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <section className="card">
+        <div className="section-title">
+          <h2>Market data unavailable</h2>
+          <p>We were unable to fetch live instruments from the middleware.</p>
+        </div>
+        <p style={{ color: 'var(--warning)' }}>{(error as Error)?.message ?? 'Unknown error'}</p>
+        <button className="chip" onClick={() => refetch()}>
+          Retry
+          <Icon name="repeat" />
+        </button>
+      </section>
+    );
+  }
+
+  const { market } = data;
 
   return (
     <div className="grid two">
@@ -52,6 +81,13 @@ export const MarketDesk = () => {
                 </td>
               </tr>
             ))}
+            {market.length === 0 && (
+              <tr>
+                <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No market orders yet. Submit one through the middleware API to populate this feed.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>
@@ -101,7 +137,10 @@ export const MarketDesk = () => {
                 }}
               >
                 <strong>{instrument.symbol}</strong>
-                <span>{instrument.change >= 0 ? '+' : ''}{instrument.change}%</span>
+                <span>
+                  {instrument.change >= 0 ? '+' : ''}
+                  {instrument.change}%
+                </span>
               </div>
             ))}
           </div>

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useExperienceStore } from '../../hooks/useExperienceStore';
-import { Icon } from '../../components/ui/Icon';
+import { useOnboardingState } from '../../hooks/useOnboardingState';
+import { Icon, type IconName } from '../../components/ui/Icon';
 import '../../components/ui/ui.css';
 
-const steps = [
+const steps: Array<{ title: string; description: string; icon: IconName }> = [
   {
     title: 'Choose your vibe',
     description: 'Tell us if you want to play as a Player, Game Master, or Observer to unlock tailored missions.',
@@ -22,12 +22,9 @@ const steps = [
 ];
 
 export const Onboarding = () => {
-  const { onboardingStep, setOnboardingStep, onboardingCompleted, completeOnboarding } = useExperienceStore();
+  const { step, setStep, completed, complete } = useOnboardingState();
 
-  const progress = useMemo(() => (onboardingCompleted ? 100 : (onboardingStep / steps.length) * 100), [
-    onboardingStep,
-    onboardingCompleted
-  ]);
+  const progress = useMemo(() => (completed ? 100 : (step / steps.length) * 100), [step, completed]);
 
   return (
     <div className="card">
@@ -42,25 +39,25 @@ export const Onboarding = () => {
         </div>
       </div>
       <div className="grid three">
-        {steps.map((step, index) => {
+        {steps.map((stepConfig, index) => {
           const current = index + 1;
-          const isUnlocked = onboardingStep >= current || onboardingCompleted;
-          const isActive = onboardingStep === current && !onboardingCompleted;
+          const isUnlocked = step >= current || completed;
+          const isActive = step === current && !completed;
           return (
-            <article key={step.title} className={`card dense ${isActive ? 'active-step' : ''}`}>
+            <article key={stepConfig.title} className={`card dense ${isActive ? 'active-step' : ''}`}>
               <div className="tag">
-                <Icon name={step.icon} /> Step {current}
+                <Icon name={stepConfig.icon} /> Step {current}
               </div>
-              <h3>{step.title}</h3>
-              <p>{step.description}</p>
+              <h3>{stepConfig.title}</h3>
+              <p>{stepConfig.description}</p>
               <button
                 className={`chip ${isUnlocked ? '' : 'ghost'}`}
                 onClick={() =>
-                  onboardingCompleted
+                  completed
                     ? null
                     : isUnlocked
-                    ? setOnboardingStep(Math.min(steps.length, current + 1))
-                    : setOnboardingStep(current)
+                    ? setStep(Math.min(steps.length, current + 1))
+                    : setStep(current)
                 }
               >
                 {isUnlocked ? 'Continue' : 'Preview'}
@@ -93,9 +90,9 @@ export const Onboarding = () => {
           </div>
         </div>
       </div>
-      {!onboardingCompleted && (
+      {!completed && (
         <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="chip" onClick={completeOnboarding}>
+          <button className="chip" onClick={complete}>
             Complete onboarding
             <Icon name="check" />
           </button>

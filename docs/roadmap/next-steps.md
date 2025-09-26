@@ -20,10 +20,10 @@ This roadmap translates the documentation gaps into actionable workstreams so co
 4. [x] **Stockmarket contract** – Formalized REST and WebSocket clients for the stockmarket simulator so market orders route through the middleware and trading telemetry can stream from the simulator.
 
 ## Phase 3 – Frontend Experience
-1. **API-powered stores** – Replace fixture-driven Zustand state with React Query fetching from live middleware endpoints.
-2. **Real-time dashboards** – Subscribe to WebSocket streams for portfolio, market depth, and session telemetry.
-3. **Validation and error UX** – Add optimistic updates, rollback handling, and user-facing error guidance per blueprint.
-4. **Design system hardening** – Introduce theming tokens, Storybook, and accessibility audits.
+1. [x] **API-powered stores** – Added `/api/v1/experience/snapshot`, migrated the frontend to React Query, and hydrated dashboards, market views, and the transfer wizard with live middleware data.
+2. [x] **Real-time dashboards** – Wired the client session WebSocket with authenticated query parameters to stream portfolio cash balances and activity directly into the React Query cache.
+3. [x] **Validation and error UX** – Upgraded the transfer wizard with optimistic cache updates, rollback-aware error messaging, and actionable guidance when validations fail.
+4. [x] **Design system hardening** – Introduced theme tokens, focus treatments, Storybook stories with the a11y addon, and scripts for automated accessibility checks.
 
 ## Phase 4 – Stockmarket Simulator
 1. **Service decomposition** – Split matching, pricing, risk, and analytics into dedicated modules/services.

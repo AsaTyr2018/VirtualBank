@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { useExperienceStore } from '../../hooks/useExperienceStore';
 import { Icon } from '../../components/ui/Icon';
+import { useExperienceSnapshot } from '../../hooks/useExperienceSnapshot';
+import { useSessionStream } from '../../hooks/useSessionStream';
 import '../../components/ui/ui.css';
 
 const formatNumber = (value: number) =>
@@ -10,14 +10,47 @@ const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
 
 export const Dashboard = () => {
-  const { funBalance, creditUtilization, accounts, transactions, quests, streakDays } = useExperienceStore();
+  const { data, isLoading, isError, error, refetch } = useExperienceSnapshot();
+  useSessionStream(Boolean(data));
 
-  const totalChange = useMemo(
-    () =>
-      accounts.reduce((total, account) => total + account.balance * (account.change / 100), 0) /
-      accounts.reduce((total, account) => total + account.balance, 0),
-    [accounts]
-  );
+  if (isLoading) {
+    return (
+      <section className="card">
+        <div className="section-title">
+          <h2>Loading experience</h2>
+          <p>Please wait while we fetch live data from the middleware.</p>
+        </div>
+        <p className="eyebrow">Fetching dashboards…</p>
+      </section>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <section className="card">
+        <div className="section-title">
+          <h2>Dashboard unavailable</h2>
+          <p>We could not reach the middleware. Verify your API credentials and try again.</p>
+        </div>
+        <p style={{ color: 'var(--warning)' }}>{(error as Error)?.message ?? 'Unknown error'}</p>
+        <button className="chip" onClick={() => refetch()}>
+          Retry connection
+          <Icon name="repeat" />
+        </button>
+      </section>
+    );
+  }
+
+  const { player, accounts, quests, activity } = data;
+
+  const totalBalance = accounts.reduce((total, account) => total + account.availableBalance, 0);
+  const weightedChange = accounts.reduce((total, account) => {
+    if (typeof account.change24h !== 'number') {
+      return total;
+    }
+    return total + account.availableBalance * (account.change24h / 100);
+  }, 0);
+  const totalChange = totalBalance > 0 ? weightedChange / totalBalance : 0;
 
   return (
     <div className="grid two">
@@ -35,7 +68,7 @@ export const Dashboard = () => {
         <div className="metric-grid">
           <div className="metric-card">
             <span>Fun balance</span>
-            <strong>{formatCurrency(funBalance)}</strong>
+            <strong>{formatCurrency(player.funBalance)}</strong>
             <div className="tag">
               <Icon name="sparkles" />
               Vault boosted today
@@ -43,7 +76,7 @@ export const Dashboard = () => {
           </div>
           <div className="metric-card">
             <span>Credit utilization</span>
-            <strong>{creditUtilization}%</strong>
+            <strong>{player.creditUtilization}%</strong>
             <div className="badge warning">
               <Icon name="flame" />
               Watch comfort zone
@@ -51,7 +84,7 @@ export const Dashboard = () => {
           </div>
           <div className="metric-card">
             <span>Daily streak</span>
-            <strong>{streakDays} days</strong>
+            <strong>{player.streakDays} days</strong>
             <div className="tag">
               <Icon name="repeat" />
               Auto quest refresh
@@ -72,14 +105,31 @@ export const Dashboard = () => {
               <tbody>
                 {accounts.map((account) => (
                   <tr key={account.id}>
-                    <td>{account.name}</td>
-                    <td>{formatCurrency(account.balance)}</td>
-                    <td style={{ color: account.change >= 0 ? 'var(--success)' : 'var(--warning)' }}>
-                      {account.change >= 0 ? '+' : ''}
-                      {account.change}%
+                    <td>
+                      <strong>{account.label}</strong>
+                      <p style={{ margin: 0, color: 'var(--text-muted)' }}>{account.currency}</p>
+                    </td>
+                    <td>{formatCurrency(account.availableBalance)}</td>
+                    <td
+                      style={{
+                        color:
+                          typeof account.change24h === 'number' && account.change24h >= 0
+                            ? 'var(--success)'
+                            : 'var(--warning)'
+                      }}
+                    >
+                      {typeof account.change24h === 'number' && account.change24h >= 0 ? '+' : ''}
+                      {typeof account.change24h === 'number' ? account.change24h : '0'}%
                     </td>
                   </tr>
                 ))}
+                {accounts.length === 0 && (
+                  <tr>
+                    <td colSpan={3} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                      No accounts yet. Create one through the middleware to see balances here.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -95,7 +145,7 @@ export const Dashboard = () => {
                     </div>
                     <span className="badge">
                       <Icon name="check" />
-                      {quest.progress}/3
+                      {quest.progress}/{quest.target}
                     </span>
                   </div>
                   <div
@@ -108,7 +158,7 @@ export const Dashboard = () => {
                   >
                     <div
                       style={{
-                        width: `${(quest.progress / 3) * 100}%`,
+                        width: `${Math.min(1, quest.progress / quest.target) * 100}%`,
                         height: '100%',
                         borderRadius: '999px',
                         background: 'var(--accent-gradient)'
@@ -117,6 +167,11 @@ export const Dashboard = () => {
                   </div>
                 </li>
               ))}
+              {quests.length === 0 && (
+                <li className="card dense" style={{ color: 'var(--text-muted)' }}>
+                  Complete onboarding to unlock your first quest.
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -128,16 +183,21 @@ export const Dashboard = () => {
             <p>Real-time ledger updates streamed from the middleware.</p>
           </div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '1rem' }}>
-            {transactions.map((txn) => (
+            {activity.map((txn) => (
               <li key={txn.id} className="card dense" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                <span className="eyebrow">{txn.timestamp}</span>
+                <span className="eyebrow">{new Date(txn.occurredAt).toLocaleString()}</span>
                 <strong>{txn.description}</strong>
                 <span style={{ color: txn.type === 'credit' ? 'var(--success)' : 'var(--warning)' }}>
                   {txn.type === 'credit' ? '+' : '-'}
-                  {formatCurrency(Math.abs(txn.amount))}
+                  {formatCurrency(Math.abs(txn.amount ?? 0))}
                 </span>
               </li>
             ))}
+            {activity.length === 0 && (
+              <li className="card dense" style={{ color: 'var(--text-muted)' }}>
+                No activity yet. Once transfers settle they will appear here.
+              </li>
+            )}
           </ul>
         </div>
         <div className="card dense">
