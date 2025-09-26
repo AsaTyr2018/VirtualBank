@@ -144,7 +144,7 @@ services:
       test:
         - "CMD-SHELL"
         - >-
-          curl -fsS -u "$MINIO_ROOT_USER:$MINIO_ROOT_PASSWORD"
+          curl -fsS -u "$$MINIO_ROOT_USER:$$MINIO_ROOT_PASSWORD"
           http://localhost:9000/minio/health/live || exit 1
       interval: 30s
       timeout: 10s

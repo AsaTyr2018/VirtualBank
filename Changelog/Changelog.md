@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.049] MinIO Health Check Variable Escaping
+- **Change Type:** Normal Change
+- **Reason:** Docker Compose emitted warnings during installs because the MinIO health probe referenced root credential environment variables that Compose attempted to resolve from the host.
+- **What Changed:** Escaped the MinIO credential variables inside the health check command so it reads the container-scoped values without host interpolation warnings and documented the behaviour update in the README.
+
 # [0.00.048] Ledger Schema Recovery
 - **Change Type:** Emergency Change
 - **Reason:** Middleware bootstraps failed because PostgreSQL instances created before the ledger schema refactor were missing the `account_id` column, so index creation aborted and the service never finished its startup.
