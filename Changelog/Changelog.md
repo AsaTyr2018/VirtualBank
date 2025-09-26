@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.042] Maintenance Timeout Diagnostics
+- **Change Type:** Emergency Change
+- **Reason:** Maintenance runs stalled while waiting for containers that exited early, leaving operators without immediate insight into why the boot sequence failed.
+- **What Changed:** Enhanced `scripts/maintenance.sh` to capture container status details plus the last 200 Docker log lines whenever readiness checks time out, refreshed the README to highlight the new diagnostics, and documented the fix here.
+
 # [0.00.041] Forced Container Rebuilds For Connectivity
 - **Change Type:** Emergency Change
 - **Reason:** Provisioned API credentials were not reaching running containers, leaving the frontend unable to authenticate with the middleware after maintenance runs.
