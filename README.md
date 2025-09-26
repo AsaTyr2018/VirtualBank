@@ -110,6 +110,10 @@ The `apps/datastore/datastore-compose.yml` stack mirrors the architecture define
 
 Bring the stack online with `docker compose -f apps/datastore/datastore-compose.yml up --build` and connect services using the shared `datastore-net` bridge network. Default credentials are scoped to local development and should be replaced in production-like scenarios.
 
+> **Replica compatibility:** The Bitnami PostgreSQL images recently reverted to the legacy `POSTGRESQL_MASTER_*` variables. The Compose file now exports both the legacy and modern `POSTGRESQL_PRIMARY_*` values so maintenance rebuilds succeed regardless of the tag that ships during an update. If you override the host or credentials, update both aliases (or set them through an `.env` file) so the replica continues to locate the primary.
+>
+> **Kafka KRaft tip:** Kafka requires a valid Base64URL cluster ID when formatting its metadata directory. The bundled stack ships with a generated ID, and you can mint a fresh value anytime with `python - <<'PY'` → `import base64, os; print(base64.urlsafe_b64encode(os.urandom(16)).decode().rstrip('='))` → `PY` before recreating volumes.
+
 ## Stockmarket Simulation Stack
 The `stockmarket-compose.yml` stack provides the executable market sandbox referenced throughout the design blueprint.
 
