@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.051] Middleware Cache and Kafka Networking Fix
+- **Change Type:** Emergency Change
+- **Reason:** The middleware container defaulted to `localhost` for Redis and Kafka, causing repeated connection refusals inside Docker and leaving the stack without caching or event streaming.
+- **What Changed:** Exported explicit Redis and Kafka endpoints in `middleware-compose.yml` so containers bind to the shared datastore network, and updated the README to document the enforced defaults.
+
 # [0.00.050] PostgreSQL Bootstrap Helper
 - **Change Type:** Emergency Change
 - **Reason:** Middleware bootstraps still failed on fresh installs because PostgreSQL lacked the ledger schema and demo records, so index creation crashed and the experience loaded without data.
