@@ -469,6 +469,7 @@ rebuild_stack() {
     if ! wait_for_container_ready "vb-minio" 180; then
       warn "MinIO service did not report healthy before timeout."
     fi
+    bootstrap_postgres_schema
     seed_fake_companies
   else
     log "Datastore compose file not found; skipping datastore deployment."
@@ -529,6 +530,39 @@ wait_for_postgres_primary() {
     sleep 2
   done
   return 1
+}
+
+bootstrap_postgres_schema() {
+  if ! docker ps --format '{{.Names}}' | grep -q "^${POSTGRES_PRIMARY_CONTAINER}$"; then
+    log "PostgreSQL primary container not running; skipping schema bootstrap."
+    return
+  fi
+
+  local bootstrap_sql_path="${INSTALL_DIR}/scripts/sql/bootstrap_postgres.sql"
+
+  if [[ ! -f "$bootstrap_sql_path" ]]; then
+    log "Bootstrap SQL $bootstrap_sql_path not found; skipping schema bootstrap."
+    return
+  fi
+
+  log "Waiting for PostgreSQL primary to accept connections before applying schema bootstrap."
+  if ! wait_for_postgres_primary; then
+    error "PostgreSQL primary did not become ready in time; skipping schema bootstrap."
+    return
+  fi
+
+  log "Copying schema bootstrap script into ${POSTGRES_PRIMARY_CONTAINER}."
+  docker cp "$bootstrap_sql_path" "${POSTGRES_PRIMARY_CONTAINER}:/tmp/bootstrap_postgres.sql"
+
+  log "Applying VirtualBank schema bootstrap."
+  if docker exec -e PGPASSWORD="$POSTGRES_PASSWORD" "$POSTGRES_PRIMARY_CONTAINER" \
+    bash -c "psql -v ON_ERROR_STOP=1 -U '$POSTGRES_USER' -d '$POSTGRES_DATABASE' -f /tmp/bootstrap_postgres.sql"; then
+    log "Schema bootstrap completed successfully."
+  else
+    error "Failed to apply schema bootstrap for PostgreSQL."
+  fi
+
+  docker exec "$POSTGRES_PRIMARY_CONTAINER" rm -f /tmp/bootstrap_postgres.sql >/dev/null 2>&1 || true
 }
 
 seed_fake_companies() {

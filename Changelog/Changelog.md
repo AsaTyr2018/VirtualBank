@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.050] PostgreSQL Bootstrap Helper
+- **Change Type:** Emergency Change
+- **Reason:** Middleware bootstraps still failed on fresh installs because PostgreSQL lacked the ledger schema and demo records, so index creation crashed and the experience loaded without data.
+- **What Changed:** Added `scripts/sql/bootstrap_postgres.sql` with idempotent schema creation plus demo ledger data and taught `scripts/maintenance.sh` to apply it before seeding market companies, while refreshing the README to document the automated bootstrap.
+
 # [0.00.049] MinIO Health Check Variable Escaping
 - **Change Type:** Normal Change
 - **Reason:** Docker Compose emitted warnings during installs because the MinIO health probe referenced root credential environment variables that Compose attempted to resolve from the host.
