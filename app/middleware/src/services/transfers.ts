@@ -1,5 +1,14 @@
-import crypto from 'node:crypto';
 import type { Datastore } from '../plugins/datastore.js';
+import type { CacheClient } from '../plugins/cache.js';
+import type { EventBridge } from '../plugins/events.js';
+import {
+  fetchTransfer,
+  fetchTransferSteps,
+  insertTransactionEvent,
+  insertTransfer,
+  insertTransferSteps
+} from '../datastore/accessors.js';
+import type { DomainEvent } from './domain-events.js';
 
 export interface TransferWorkflowInput {
   transferId: string;
@@ -22,69 +31,91 @@ export interface TransferStatusResponse {
   steps: TransferStatusStep[];
 }
 
+export interface TransferWorkflowDependencies {
+  datastore: Datastore;
+  cache: CacheClient;
+  events: EventBridge;
+}
+
+export interface TransferWorkflowContext {
+  correlationId: string;
+  sessionId?: string;
+}
+
 export async function createTransferWorkflow(
-  datastore: Datastore,
-  input: TransferWorkflowInput
+  deps: TransferWorkflowDependencies,
+  input: TransferWorkflowInput,
+  context: TransferWorkflowContext
 ): Promise<TransferStatusResponse> {
-  const client = await datastore.pool.connect();
+  const client = await deps.datastore.pool.connect();
+  const executor = { query: client.query.bind(client) as Datastore['query'] };
   const now = new Date().toISOString();
 
   try {
     await client.query('BEGIN');
 
-    await client.query(
-      `INSERT INTO transfers (
-        transfer_id,
-        source_account_id,
-        destination_account_id,
-        amount,
-        currency,
-        note,
-        status,
-        created_at,
-        updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)`,
-      [
-        input.transferId,
-        input.sourceAccountId,
-        input.destinationAccountId,
-        input.amount.toString(),
-        input.currency,
-        input.note ?? null,
-        'pending',
-        now
-      ]
-    );
+    const transfer = await insertTransfer(executor, {
+      transferId: input.transferId,
+      sourceAccountId: input.sourceAccountId,
+      destinationAccountId: input.destinationAccountId,
+      amount: input.amount,
+      currency: input.currency,
+      note: input.note,
+      status: 'pending'
+    });
 
-    await client.query(
-      `INSERT INTO transfer_steps (step_id, transfer_id, sequence, name, status, occurred_at)
-       VALUES ($1, $2, $3, $4, $5, $6),
-              ($7, $2, $8, $9, $10, $11)`,
-      [
-        crypto.randomUUID(),
-        input.transferId,
-        1,
-        'reserve_funds',
-        'succeeded',
-        now,
-        crypto.randomUUID(),
-        2,
-        'commit_transfer',
-        'pending',
-        now
-      ]
-    );
+    const steps = await insertTransferSteps(executor, [
+      { transferId: input.transferId, sequence: 1, name: 'reserve_funds', status: 'succeeded' },
+      { transferId: input.transferId, sequence: 2, name: 'commit_transfer', status: 'pending' }
+    ]);
+
+    await insertTransactionEvent(executor, {
+      eventType: 'transfers.initiated',
+      resourceType: 'transfer',
+      resourceId: input.transferId,
+      payload: {
+        transfer,
+        steps,
+        correlationId: context.correlationId,
+        sessionId: context.sessionId ?? null
+      },
+      status: 'pending'
+    });
 
     await client.query('COMMIT');
 
-    return {
+    const response: TransferStatusResponse = {
       transferId: input.transferId,
       status: 'pending',
-      steps: [
-        { name: 'reserve_funds', status: 'succeeded', occurredAt: now },
-        { name: 'commit_transfer', status: 'pending', occurredAt: now }
-      ]
+      steps: steps.map((step) => ({
+        name: step.name,
+        status: step.status,
+        occurredAt: step.occurredAt
+      }))
     };
+
+    await deps.cache.set(`transfer:${input.transferId}`, response, deps.cache.defaultTtlSeconds);
+
+    const event: DomainEvent = {
+      type: 'transfers.initiated',
+      key: input.transferId,
+      version: 1,
+      occurredAt: now,
+      payload: {
+        transferId: input.transferId,
+        status: response.status,
+        sourceAccountId: input.sourceAccountId,
+        destinationAccountId: input.destinationAccountId,
+        amount: input.amount,
+        currency: input.currency,
+        correlationId: context.correlationId,
+        sessionId: context.sessionId ?? null
+      }
+    };
+
+    await deps.events.publish(event);
+
+    return response;
   } catch (error) {
     try {
       await client.query('ROLLBACK');
@@ -99,32 +130,30 @@ export async function createTransferWorkflow(
 }
 
 export async function getTransferStatus(
-  datastore: Datastore,
+  deps: TransferWorkflowDependencies,
   transferId: string
 ): Promise<TransferStatusResponse | null> {
-  const transferResult = await datastore.query<{
-    transfer_id: string;
-    status: string;
-  }>('SELECT transfer_id, status FROM transfers WHERE transfer_id = $1', [transferId]);
+  const cached = await deps.cache.get<TransferStatusResponse>(`transfer:${transferId}`);
+  if (cached) {
+    return cached;
+  }
 
-  if (transferResult.rowCount === 0) {
+  const transfer = await fetchTransfer(deps.datastore, transferId);
+  if (!transfer) {
     return null;
   }
 
-  const stepsResult = await datastore.query<{
-    name: string;
-    status: string;
-    occurred_at: Date;
-    sequence: number;
-  }>('SELECT name, status, occurred_at, sequence FROM transfer_steps WHERE transfer_id = $1 ORDER BY sequence', [transferId]);
-
-  return {
+  const steps = await fetchTransferSteps(deps.datastore, transferId);
+  const response: TransferStatusResponse = {
     transferId,
-    status: transferResult.rows[0].status,
-    steps: stepsResult.rows.map((row) => ({
-      name: row.name,
-      status: row.status,
-      occurredAt: new Date(row.occurred_at).toISOString()
+    status: transfer.status,
+    steps: steps.map((step) => ({
+      name: step.name,
+      status: step.status,
+      occurredAt: step.occurredAt
     }))
   };
+
+  await deps.cache.set(`transfer:${transferId}`, response, deps.cache.defaultTtlSeconds);
+  return response;
 }

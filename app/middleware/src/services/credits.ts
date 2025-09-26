@@ -1,4 +1,8 @@
 import type { Datastore } from '../plugins/datastore.js';
+import type { CacheClient } from '../plugins/cache.js';
+import type { EventBridge } from '../plugins/events.js';
+import { insertCreditApplication, insertTransactionEvent } from '../datastore/accessors.js';
+import type { DomainEvent } from './domain-events.js';
 
 export interface CreditApplicationInput {
   applicationId: string;
@@ -11,41 +15,63 @@ export interface CreditApplicationInput {
   attachments?: string[];
 }
 
-export async function submitCreditApplication(datastore: Datastore, input: CreditApplicationInput): Promise<void> {
-  const now = new Date().toISOString();
-  await datastore.query(
-    `INSERT INTO credit_applications (
-      application_id,
-      player_id,
-      account_id,
-      requested_limit,
-      currency,
-      justification,
-      collateral_type,
-      attachments,
-      status,
-      created_at,
-      updated_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10, $10)
-    ON CONFLICT (application_id) DO UPDATE SET
-      requested_limit = EXCLUDED.requested_limit,
-      currency = EXCLUDED.currency,
-      justification = EXCLUDED.justification,
-      collateral_type = EXCLUDED.collateral_type,
-      attachments = EXCLUDED.attachments,
-      status = EXCLUDED.status,
-      updated_at = EXCLUDED.updated_at`,
-    [
-      input.applicationId,
-      input.playerId,
-      input.accountId,
-      input.requestedLimit.toString(),
-      input.currency,
-      input.justification,
-      input.collateralType ?? null,
-      JSON.stringify(input.attachments ?? []),
-      'received',
-      now
-    ]
-  );
+export interface CreditApplicationDependencies {
+  datastore: Datastore;
+  cache: CacheClient;
+  events: EventBridge;
+}
+
+export interface CreditApplicationContext {
+  correlationId: string;
+  sessionId?: string;
+}
+
+export async function submitCreditApplication(
+  deps: CreditApplicationDependencies,
+  input: CreditApplicationInput,
+  context: CreditApplicationContext
+): Promise<void> {
+  const record = await insertCreditApplication(deps.datastore, {
+    applicationId: input.applicationId,
+    playerId: input.playerId,
+    accountId: input.accountId,
+    requestedLimit: input.requestedLimit,
+    currency: input.currency,
+    justification: input.justification,
+    collateralType: input.collateralType,
+    attachments: input.attachments,
+    status: 'received'
+  });
+
+  await insertTransactionEvent(deps.datastore, {
+    eventType: 'credits.received',
+    resourceType: 'credit_application',
+    resourceId: record.applicationId,
+    payload: {
+      applicationId: record.applicationId,
+      accountId: record.accountId,
+      playerId: record.playerId,
+      requestedLimit: record.requestedLimit,
+      currency: record.currency,
+      correlationId: context.correlationId,
+      sessionId: context.sessionId ?? null
+    }
+  });
+
+  const event: DomainEvent = {
+    type: 'credits.received',
+    key: record.applicationId,
+    version: 1,
+    payload: {
+      applicationId: record.applicationId,
+      accountId: record.accountId,
+      requestedLimit: record.requestedLimit,
+      currency: record.currency,
+      correlationId: context.correlationId,
+      sessionId: context.sessionId ?? null
+    }
+  };
+
+  await deps.cache.delete(`credit:${record.applicationId}`);
+  await deps.events.publish(event);
 }

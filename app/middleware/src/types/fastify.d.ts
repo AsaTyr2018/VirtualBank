@@ -2,6 +2,9 @@ import 'fastify';
 import type { Registry, Histogram, Counter } from 'prom-client';
 import type { config } from '../config/index.js';
 import type { Datastore } from '../plugins/datastore.js';
+import type { CacheClient } from '../plugins/cache.js';
+import type { EventBridge } from '../plugins/events.js';
+import type { StockmarketClient } from '../plugins/stockmarket.js';
 import type { AuthenticatedUser } from '../plugins/authentication.js';
 
 type ConfigShape = typeof config;
@@ -10,6 +13,9 @@ declare module 'fastify' {
   interface FastifyInstance {
     config: ConfigShape;
     datastore: Datastore;
+    cache: CacheClient;
+    events: EventBridge;
+    stockmarket: StockmarketClient;
     auth: {
       getPrincipal(secret: string): { id: string; roles: string[] } | undefined;
     };

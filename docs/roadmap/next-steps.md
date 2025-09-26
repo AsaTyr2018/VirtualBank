@@ -14,10 +14,10 @@ This roadmap translates the documentation gaps into actionable workstreams so co
 - [x] **Observability baseline** – Structured request logs, Prometheus metrics at `/internal/metrics`, and centralized error handling provide actionable telemetry for middleware operations.
 
 ## Phase 2 – Data & Integration Layer
-1. **Prisma/SQL schema implementation** – Materialize the documented schema and generate typed accessors.
-2. **Event streaming bridge** – Publish Kafka topics for transfers, credits, market orders, and session events.
-3. **Cache tier wiring** – Layer Redis caching for hot reads and invalidation flows.
-4. **Stockmarket contract** – Formalize REST/WebSocket clients in the middleware for quote intake and order routing.
+1. [x] **Prisma/SQL schema implementation** – Materialized the documented account, ledger, workflow, and session tables in PostgreSQL and shipped a Prisma schema plus typed data-access helpers that transactions use within the middleware.
+2. [x] **Event streaming bridge** – Added a Kafka-backed event bridge that serializes domain envelopes for transfers, credits, market orders, and session lifecycle updates, ensuring every workflow emits auditable topics.
+3. [x] **Cache tier wiring** – Introduced a Redis cache plugin with configurable TTLs and helper APIs that the transfer, credit, and market services now leverage for hot lookups and invalidation.
+4. [x] **Stockmarket contract** – Formalized REST and WebSocket clients for the stockmarket simulator so market orders route through the middleware and trading telemetry can stream from the simulator.
 
 ## Phase 3 – Frontend Experience
 1. **API-powered stores** – Replace fixture-driven Zustand state with React Query fetching from live middleware endpoints.
