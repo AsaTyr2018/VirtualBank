@@ -355,9 +355,13 @@ rebuild_stack() {
   if [[ -f "${INSTALL_DIR}/${DATASTORE_COMPOSE}" ]]; then
     log "Ensuring datastore stack is prepared using ${compose_cmd}."
     (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" pull)
-    if ! (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" up -d --build --wait); then
+    log "Tearing down datastore containers to guarantee a clean rebuild."
+    (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" down --remove-orphans)
+    log "Rebuilding datastore images without cache (pulling fresh bases)."
+    (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" build --pull --no-cache)
+    if ! (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" up -d --force-recreate --remove-orphans --wait); then
       warn "Compose '--wait' unsupported for datastore stack; retrying without it."
-      (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" up -d --build)
+      (cd "$INSTALL_DIR" && $compose_cmd -f "$DATASTORE_COMPOSE" up -d --force-recreate --remove-orphans)
     fi
     if ! wait_for_container_ready "$POSTGRES_PRIMARY_CONTAINER" 240; then
       warn "PostgreSQL primary did not report healthy before timeout."
@@ -385,9 +389,13 @@ rebuild_stack() {
   if [[ -f "${INSTALL_DIR}/${STOCKMARKET_COMPOSE}" ]]; then
     log "Ensuring stockmarket stack is prepared using ${compose_cmd}."
     (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" pull)
-    if ! (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" up -d --build --wait); then
+    log "Tearing down stockmarket containers to guarantee a clean rebuild."
+    (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" down --remove-orphans)
+    log "Rebuilding stockmarket images without cache (pulling fresh bases)."
+    (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" build --pull --no-cache)
+    if ! (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" up -d --force-recreate --remove-orphans --wait); then
       warn "Compose '--wait' unsupported for stockmarket stack; retrying without it."
-      (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" up -d --build)
+      (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$STOCKMARKET_COMPOSE" up -d --force-recreate --remove-orphans)
     fi
     if ! wait_for_container_ready "vb-stockmarket" 180; then
       warn "Stockmarket simulator did not report ready before timeout."
@@ -399,9 +407,13 @@ rebuild_stack() {
   if [[ -f "${INSTALL_DIR}/${COMPOSE_FILE}" ]]; then
     log "Updating middleware stack using ${compose_cmd}."
     (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" pull)
-    if ! (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" up -d --build --wait); then
+    log "Tearing down middleware containers to guarantee a clean rebuild."
+    (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" down --remove-orphans)
+    log "Rebuilding middleware images without cache (pulling fresh bases)."
+    (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" build --pull --no-cache)
+    if ! (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" up -d --force-recreate --remove-orphans --wait); then
       warn "Compose '--wait' unsupported for middleware stack; retrying without it."
-      (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" up -d --build)
+      (cd "$INSTALL_DIR" && $compose_cmd "${env_args[@]}" -f "$COMPOSE_FILE" up -d --force-recreate --remove-orphans)
     fi
     local middleware_health_url frontend_url
     middleware_health_url="$(middleware_public_url)/health/live"

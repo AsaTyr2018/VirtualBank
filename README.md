@@ -23,14 +23,14 @@ The `scripts/maintenance.sh` helper orchestrates installation and lifecycle task
 
 | Command | Description |
 | --- | --- |
-| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, generates shared API credentials, and starts the datastore → stockmarket → middleware stacks with shared networks. |
-| `update` | Pulls the latest commits, refreshes shared API credentials, rebuilds containers, and reapplies the datastore → stockmarket → middleware stacks. |
+| `install` | Clones the upstream repository into `/opt/VirtualBank`, verifies Docker tooling, generates shared API credentials, and starts the datastore → stockmarket → middleware stacks with shared networks. Every stack is recreated after a `down` + no-cache `build` so fresh environment variables propagate. |
+| `update` | Pulls the latest commits, refreshes shared API credentials, forces no-cache rebuilds of every container, and reapplies the datastore → stockmarket → middleware stacks so new middleware/stockmarket configuration is honoured immediately. |
 | `uninstall` | Stops active Compose services, removes related volumes, and deletes `/opt/VirtualBank`. |
 | `check-updates` | Contacts GitHub to determine whether newer commits are available without applying changes. |
 
 Example usage: `sudo ./scripts/maintenance.sh install`.
 
-Both `install` and `update` wait for the datastore services to report healthy, seed the `market_companies` table, rehydrate the shared connectivity bundle, and confirm the middleware/frontend probes succeed before reporting success. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
+Both `install` and `update` wait for the datastore services to report healthy, seed the `market_companies` table, rehydrate the shared connectivity bundle, and confirm the middleware/frontend probes succeed before reporting success. Each run tears down the running containers first and rebuilds images without cache, guaranteeing that regenerated API keys and Compose environment overrides flow into the restarted services. The seed runs with `synchronous_commit=local` so it never blocks on a cold replica while the dataset is applied.
 
 ## Highlights
 - **Best-in-class UX** with responsive, accessible interfaces and gamified feedback loops.
