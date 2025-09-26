@@ -1,5 +1,10 @@
 # Changelog
 
+# [0.00.052] Stockmarket Order Schema Recovery
+- **Change Type:** Emergency Change
+- **Reason:** The stockmarket container crashed during startup because historic PostgreSQL volumes lacked the `market_orders.user_id` column referenced by the matching engine, aborting the service before it exposed its API.
+- **What Changed:** Added a defensive schema migration that backfills the missing `user_id` column during storage initialisation and updated the README to explain the automatic recovery behaviour.
+
 # [0.00.051] Middleware Cache and Kafka Networking Fix
 - **Change Type:** Emergency Change
 - **Reason:** The middleware container defaulted to `localhost` for Redis and Kafka, causing repeated connection refusals inside Docker and leaving the stack without caching or event streaming.
